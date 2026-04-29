@@ -1,0 +1,299 @@
+@model EnterpriseAutomation.ViewModels.ReportsViewModel
+@{
+    ViewData["Title"] = "Отчёты";
+}
+
+<div class="section-head">
+    <div>
+        <h1>Отчёты</h1>
+        <p class="text-muted mb-0">Сводные таблицы по заказам, заявкам и клиентам.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12">
+        <section class="report-card" data-report="orders">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+                <div>
+                    <h2>Заказы за период</h2>
+                    <div class="report-status" data-report-status></div>
+                </div>
+                <button class="btn btn-outline-primary" type="button" data-download="orders" disabled>Скачать CSV</button>
+            </div>
+            <form class="report-actions" data-report-form="orders">
+                <div>
+                    <label class="form-label" for="ordersFrom">Дата от</label>
+                    <input id="ordersFrom" name="from" value="@Model.From.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+                </div>
+                <div>
+                    <label class="form-label" for="ordersTo">Дата до</label>
+                    <input id="ordersTo" name="to" value="@Model.To.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+                </div>
+                <button class="btn btn-primary" type="submit">Показать</button>
+            </form>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Клиент</th>
+                            <th>Услуги</th>
+                            <th class="text-end">Сумма</th>
+                            <th>Срок</th>
+                            <th>Оплата</th>
+                            <th>Исполнение</th>
+                        </tr>
+                    </thead>
+                    <tbody data-report-body="orders"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-6">
+        <section class="report-card h-100" data-report="requests">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+                <div>
+                    <h2>Заявки по статусам</h2>
+                    <div class="report-status" data-report-status></div>
+                </div>
+                <button class="btn btn-outline-primary" type="button" data-download="requests" disabled>Скачать CSV</button>
+            </div>
+            <form class="report-actions" data-report-form="requests">
+                <div>
+                    <label class="form-label" for="requestStatus">Статус</label>
+                    <select id="requestStatus" name="statusId" asp-items="ViewBag.Statuses" class="form-select">
+                        <option value="">Все статусы</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" type="submit">Показать</button>
+            </form>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Статус</th>
+                            <th class="text-end">Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody data-report-body="requests"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-6">
+        <section class="report-card h-100" data-report="clients">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+                <div>
+                    <h2>Клиенты</h2>
+                    <div class="report-status" data-report-status></div>
+                </div>
+                <button class="btn btn-outline-primary" type="button" data-download="clients" disabled>Скачать CSV</button>
+            </div>
+            <form class="report-actions" data-report-form="clients">
+                <div>
+                    <label class="form-label" for="clientsTake">Топ клиентов</label>
+                    <input id="clientsTake" name="take" value="10" min="1" max="100" type="number" class="form-control" />
+                </div>
+                <button class="btn btn-primary" type="submit">Показать</button>
+            </form>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Клиент</th>
+                            <th class="text-end">Заказов</th>
+                            <th class="text-end">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody data-report-body="clients"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const reportState = {
+            orders: [],
+            requests: [],
+            clients: []
+        };
+
+        const reportConfig = {
+            orders: {
+                fileName: 'orders_report.csv',
+                headers: ['Номер', 'Клиент', 'Услуги', 'Сумма', 'Срок', 'Оплата', 'Исполнение'],
+                rows: () => reportState.orders.map((item) => [
+                    item.orderId,
+                    item.clientName,
+                    item.services,
+                    item.amount,
+                    formatDate(item.dueDate),
+                    item.paymentStatus,
+                    item.executionStatus
+                ])
+            },
+            requests: {
+                fileName: 'requests_report.csv',
+                headers: ['Статус', 'Количество'],
+                rows: () => reportState.requests.map((item) => [item.status, item.count])
+            },
+            clients: {
+                fileName: 'clients_report.csv',
+                headers: ['Клиент', 'Количество заказов', 'Общая сумма'],
+                rows: () => reportState.clients.map((item) => [item.clientName, item.ordersCount, item.totalAmount])
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('[data-report-form="orders"]').addEventListener('submit', (event) => {
+                event.preventDefault();
+                loadOrders();
+            });
+
+            document.querySelector('[data-report-form="requests"]').addEventListener('submit', (event) => {
+                event.preventDefault();
+                loadRequests();
+            });
+
+            document.querySelector('[data-report-form="clients"]').addEventListener('submit', (event) => {
+                event.preventDefault();
+                loadClients();
+            });
+
+            document.querySelectorAll('[data-download]').forEach((button) => {
+                button.addEventListener('click', () => downloadReport(button.dataset.download));
+            });
+
+            loadOrders();
+            loadRequests();
+            loadClients();
+        });
+
+        async function loadOrders() {
+            const form = document.querySelector('[data-report-form="orders"]');
+            const query = new URLSearchParams(new FormData(form));
+            await loadReport('orders', `/api/reports/orders?${query}`, renderOrders);
+        }
+
+        async function loadRequests() {
+            const form = document.querySelector('[data-report-form="requests"]');
+            const query = new URLSearchParams(new FormData(form));
+            await loadReport('requests', `/api/reports/requests-by-status?${query}`, renderRequests);
+        }
+
+        async function loadClients() {
+            const form = document.querySelector('[data-report-form="clients"]');
+            const query = new URLSearchParams(new FormData(form));
+            await loadReport('clients', `/api/reports/clients?${query}`, renderClients);
+        }
+
+        async function loadReport(name, url, render) {
+            setReportStatus(name, 'Загрузка...', false);
+
+            try {
+                const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить отчёт');
+                }
+
+                const data = await response.json();
+                reportState[name] = data;
+                render(data);
+                setReportStatus(name, data.length ? `Загружено строк: ${data.length}` : 'Нет данных', data.length > 0);
+            } catch (error) {
+                reportState[name] = [];
+                render([]);
+                setReportStatus(name, error.message || 'Ошибка загрузки', false, true);
+            }
+        }
+
+        function renderOrders(items) {
+            const body = document.querySelector('[data-report-body="orders"]');
+            body.innerHTML = items.map((item) => `
+                <tr>
+                    <td>${escapeHtml(item.orderId)}</td>
+                    <td>${escapeHtml(item.clientName)}</td>
+                    <td>${escapeHtml(item.services)}</td>
+                    <td class="text-end">${formatMoney(item.amount)}</td>
+                    <td>${formatDate(item.dueDate)}</td>
+                    <td>${escapeHtml(item.paymentStatus)}</td>
+                    <td>${escapeHtml(item.executionStatus)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderRequests(items) {
+            const body = document.querySelector('[data-report-body="requests"]');
+            body.innerHTML = items.map((item) => `
+                <tr>
+                    <td>${escapeHtml(item.status)}</td>
+                    <td class="text-end">${escapeHtml(item.count)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderClients(items) {
+            const body = document.querySelector('[data-report-body="clients"]');
+            body.innerHTML = items.map((item) => `
+                <tr>
+                    <td>${escapeHtml(item.clientName)}</td>
+                    <td class="text-end">${escapeHtml(item.ordersCount)}</td>
+                    <td class="text-end">${formatMoney(item.totalAmount)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function setReportStatus(name, message, canDownload, isError = false) {
+            const section = document.querySelector(`[data-report="${name}"]`);
+            const status = section.querySelector('[data-report-status]');
+            const button = section.querySelector('[data-download]');
+
+            status.textContent = message;
+            status.classList.toggle('text-danger', isError);
+            button.disabled = !canDownload;
+        }
+
+        function downloadReport(name) {
+            const config = reportConfig[name];
+            const rows = config.rows();
+            if (!rows.length) {
+                return;
+            }
+
+            const csv = [config.headers, ...rows].map((row) => row.map(csvCell).join(';')).join('\r\n');
+            const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = config.fileName;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function csvCell(value) {
+            const text = value == null ? '' : String(value);
+            return `"${text.replace(/"/g, '""')}"`;
+        }
+
+        function formatMoney(value) {
+            return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(value || 0);
+        }
+
+        function formatDate(value) {
+            if (!value) {
+                return '';
+            }
+
+            return new Intl.DateTimeFormat('ru-RU').format(new Date(value));
+        }
+
+        function escapeHtml(value) {
+            const element = document.createElement('span');
+            element.textContent = value == null ? '' : value;
+            return element.innerHTML;
+        }
+    </script>
+}

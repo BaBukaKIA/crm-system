@@ -1,0 +1,14 @@
+@model EnterpriseAutomation.Models.Order
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="edit-form">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3"><label asp-for="ServiceRequestId" class="form-label"></label><select asp-for="ServiceRequestId" asp-items="ViewBag.Requests" class="form-select"></select><span asp-validation-for="ServiceRequestId" class="text-danger"></span></div>
+    <div class="mb-3"><label asp-for="Services" class="form-label"></label><textarea asp-for="Services" class="form-control" rows="4"></textarea><span asp-validation-for="Services" class="text-danger"></span></div>
+    <div class="row">
+        <div class="col-md-4 mb-3"><label asp-for="Amount" class="form-label"></label><input asp-for="Amount" class="form-control" /></div>
+        <div class="col-md-4 mb-3"><label asp-for="DueDate" class="form-label"></label><input asp-for="DueDate" type="date" class="form-control" /></div>
+        <div class="col-md-4 mb-3"><label asp-for="PaymentStatusId" class="form-label"></label><select asp-for="PaymentStatusId" asp-items="ViewBag.PaymentStatuses" class="form-select"></select></div>
+    </div>
+    <div class="mb-3"><label asp-for="ExecutionStatusId" class="form-label"></label><select asp-for="ExecutionStatusId" asp-items="ViewBag.ExecutionStatuses" class="form-select"></select></div>
+    <button class="btn btn-primary">Сохранить</button> <a class="btn btn-secondary" asp-action="Index">Назад</a>
+</form>

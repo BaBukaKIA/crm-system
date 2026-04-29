@@ -1,0 +1,16 @@
+@model IEnumerable<EnterpriseAutomation.Models.Client>
+@{ ViewData["Title"] = "Клиенты"; var filter = (EnterpriseAutomation.ViewModels.ClientFilter)ViewBag.Filter; }
+<div class="section-head"><h1>Клиенты</h1><a class="btn btn-primary" asp-action="Create">Добавить</a></div>
+<form method="get" class="filter-bar">
+    <input name="Search" value="@filter.Search" class="form-control" placeholder="Поиск по названию, телефону, email" />
+    <select name="Sort" class="form-select"><option value="name">По названию</option><option value="email">По email</option></select>
+    <button class="btn btn-outline-primary">Найти</button>
+</form>
+<table class="table table-hover align-middle">
+    <thead><tr><th>ФИО/название</th><th>Телефон</th><th>Email</th><th>Адрес</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr><td>@item.Name<br><span class="text-muted small">@item.Note</span></td><td>@item.Phone</td><td>@item.Email</td><td>@item.Address</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Изменить</a> @if (User.IsInRole("Administrator")) { <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Удалить</a> }</td></tr>
+    }
+    </tbody>
+</table>

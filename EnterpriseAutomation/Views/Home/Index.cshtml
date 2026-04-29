@@ -1,0 +1,113 @@
+@model EnterpriseAutomation.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Главная панель";
+
+    var sections = new[]
+    {
+        new
+        {
+            Title = "Клиенты",
+            Description = "Единая база организаций и физических лиц, контакты и рабочие заметки.",
+            Controller = "Clients",
+            Icon = "clients"
+        },
+        new
+        {
+            Title = "Заявки",
+            Description = "Обращения клиентов, ответственные менеджеры и текущие статусы обработки.",
+            Controller = "Requests",
+            Icon = "requests"
+        },
+        new
+        {
+            Title = "Заказы",
+            Description = "Состав услуг, суммы, сроки выполнения и контроль оплаты по заказам.",
+            Controller = "Orders",
+            Icon = "orders"
+        },
+        new
+        {
+            Title = "Отчёты",
+            Description = "Сводки по периодам, статусам, выручке и наиболее активным клиентам.",
+            Controller = "Reports",
+            Icon = "reports"
+        }
+    };
+}
+
+@if (User.Identity?.IsAuthenticated != true)
+{
+    <div class="dashboard-auth">
+        <div>
+            <h2>Войдите в систему</h2>
+            <p>После входа откроются разделы панели, рабочие списки и оперативная статистика.</p>
+        </div>
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Войти в систему</a>
+    </div>
+}
+else
+{
+    <section class="dashboard-stats" aria-label="Краткая статистика">
+        <article class="dashboard-stat">
+            <span class="dashboard-stat__label">Клиенты</span>
+            <strong>@Model.ClientsCount</strong>
+            <span class="dashboard-stat__hint">в базе системы</span>
+        </article>
+        <article class="dashboard-stat">
+            <span class="dashboard-stat__label">Заявки</span>
+            <strong>@Model.RequestsCount</strong>
+            <span class="dashboard-stat__hint">зарегистрировано</span>
+        </article>
+        <article class="dashboard-stat">
+            <span class="dashboard-stat__label">Заказы</span>
+            <strong>@Model.OrdersCount</strong>
+            <span class="dashboard-stat__hint">создано из заявок</span>
+        </article>
+        <article class="dashboard-stat">
+            <span class="dashboard-stat__label">Сумма заказов</span>
+            <strong>@Model.OrdersAmount.ToString("N0") ₽</strong>
+            <span class="dashboard-stat__hint">@Model.UnpaidOrdersCount неоплачено полностью</span>
+        </article>
+    </section>
+
+    <section class="dashboard-section">
+        <div class="section-head">
+            <div>
+                <h2>Основные разделы</h2>
+                <p>Быстрый переход к ключевым рабочим областям системы.</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            @foreach (var item in sections)
+            {
+                <a class="dashboard-card" asp-controller="@item.Controller" asp-action="Index">
+                    <span class="dashboard-card__icon dashboard-card__icon--@item.Icon" aria-hidden="true">
+                        @if (item.Icon == "clients")
+                        {
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M16 11a4 4 0 1 0-2.9-6.76A5 5 0 0 1 12 11h4Zm-8 0a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.7-6 3.8V20h12v-3.2C14 14.7 11.3 13 8 13Zm8 0c-.8 0-1.5.1-2.2.3 1.4.9 2.2 2.1 2.2 3.5V20h6v-3.2c0-2.1-2.7-3.8-6-3.8Z" /></svg>
+                        }
+                        else if (item.Icon == "requests")
+                        {
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M5 3h10l4 4v14H5V3Zm9 1.8V8h3.2L14 4.8ZM8 11h8V9.5H8V11Zm0 3.5h8V13H8v1.5Zm0 3.5h5v-1.5H8V18Z" /></svg>
+                        }
+                        else if (item.Icon == "orders")
+                        {
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M4 5h16v3H4V5Zm1 5h14l-1.2 9H6.2L5 10Zm4 2v5h1.7v-5H9Zm4.3 0v5H15v-5h-1.7Z" /></svg>
+                        }
+                        else
+                        {
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M4 19h16v2H4v-2Zm2-8h3v6H6v-6Zm5-6h3v12h-3V5Zm5 3h3v9h-3V8Z" /></svg>
+                        }
+                    </span>
+                    <span class="dashboard-card__body">
+                        <strong>@item.Title</strong>
+                        <span>@item.Description</span>
+                    </span>
+                    <span class="dashboard-card__action">Открыть</span>
+                </a>
+            }
+        </div>
+    </section>
+}

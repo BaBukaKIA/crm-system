@@ -1,0 +1,26 @@
+@model EnterpriseAutomation.ViewModels.LoginViewModel
+@{ ViewData["Title"] = "Вход"; }
+
+<div class="auth-panel">
+    <h1>Вход в систему</h1>
+    <form asp-action="Login" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Login" class="form-label"></label>
+            <input asp-for="Login" class="form-control" autofocus />
+            <span asp-validation-for="Login" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary w-100">Войти</button>
+    </form>
+    <div class="small text-muted mt-3">
+        Администратор: admin / admin123<br />
+        Менеджер: manager / manager123
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

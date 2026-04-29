@@ -1,0 +1,18 @@
+@model IEnumerable<EnterpriseAutomation.Models.ServiceRequest>
+@{ ViewData["Title"] = "Заявки"; var filter = (EnterpriseAutomation.ViewModels.RequestFilter)ViewBag.Filter; }
+<div class="section-head"><h1>Заявки</h1><a class="btn btn-primary" asp-action="Create">Добавить</a></div>
+<form method="get" class="filter-bar">
+    <input name="Search" value="@filter.Search" class="form-control" placeholder="Клиент или описание" />
+    <select name="StatusId" asp-items="ViewBag.Statuses" class="form-select"><option value="">Все статусы</option></select>
+    <select name="ManagerId" asp-items="ViewBag.Managers" class="form-select"><option value="">Все менеджеры</option></select>
+    <input name="From" value="@filter.From?.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+    <input name="To" value="@filter.To?.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+    <button class="btn btn-outline-primary">Фильтр</button>
+</form>
+<table class="table table-hover align-middle">
+<thead><tr><th>Дата</th><th>Клиент</th><th>Описание</th><th>Статус</th><th>Менеджер</th><th></th></tr></thead>
+<tbody>
+@foreach (var item in Model) {
+<tr><td>@item.CreatedAt.ToString("dd.MM.yyyy")</td><td>@item.Client?.Name</td><td>@item.Description</td><td><span class="badge text-bg-secondary">@item.RequestStatus?.Name</span></td><td>@item.Manager?.FullName</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Изменить</a> @if (User.IsInRole("Administrator")) { <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Удалить</a> }</td></tr>
+}
+</tbody></table>

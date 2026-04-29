@@ -1,0 +1,18 @@
+@model IEnumerable<EnterpriseAutomation.Models.Order>
+@{ ViewData["Title"] = "Заказы"; var filter = (EnterpriseAutomation.ViewModels.OrderFilter)ViewBag.Filter; }
+<div class="section-head"><h1>Заказы</h1><a class="btn btn-primary" asp-action="Create">Добавить</a></div>
+<form method="get" class="filter-bar">
+    <input name="Search" value="@filter.Search" class="form-control" placeholder="Клиент или услуга" />
+    <select name="PaymentStatusId" asp-items="ViewBag.PaymentStatuses" class="form-select"><option value="">Оплата</option></select>
+    <select name="ExecutionStatusId" asp-items="ViewBag.ExecutionStatuses" class="form-select"><option value="">Исполнение</option></select>
+    <input name="From" value="@filter.From?.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+    <input name="To" value="@filter.To?.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+    <button class="btn btn-outline-primary">Фильтр</button>
+</form>
+<table class="table table-hover align-middle">
+<thead><tr><th>Клиент</th><th>Услуги</th><th>Сумма</th><th>Срок</th><th>Оплата</th><th>Исполнение</th><th></th></tr></thead>
+<tbody>
+@foreach (var item in Model) {
+<tr><td>@item.ServiceRequest?.Client?.Name<br><span class="text-muted small">Заявка #@item.ServiceRequestId</span></td><td>@item.Services</td><td>@item.Amount.ToString("N2") ₽</td><td>@item.DueDate.ToString("dd.MM.yyyy")</td><td>@item.PaymentStatus?.Name</td><td>@item.ExecutionStatus?.Name</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Изменить</a> @if (User.IsInRole("Administrator")) { <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Удалить</a> }</td></tr>
+}
+</tbody></table>

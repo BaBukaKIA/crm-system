@@ -1,0 +1,10 @@
+@model EnterpriseAutomation.Models.Client
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="edit-form">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3"><label asp-for="Name" class="form-label">ФИО/название</label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name" class="text-danger"></span></div>
+    <div class="row"><div class="col-md-6 mb-3"><label asp-for="Phone" class="form-label">Телефон</label><input asp-for="Phone" class="form-control" /></div><div class="col-md-6 mb-3"><label asp-for="Email" class="form-label">Email</label><input asp-for="Email" class="form-control" /></div></div>
+    <div class="mb-3"><label asp-for="Address" class="form-label">Адрес</label><input asp-for="Address" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Note" class="form-label">Примечание</label><textarea asp-for="Note" class="form-control" rows="3"></textarea></div>
+    <button class="btn btn-primary">Сохранить</button> <a class="btn btn-secondary" asp-action="Index">Назад</a>
+</form>
