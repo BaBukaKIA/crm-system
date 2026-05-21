@@ -1,10 +1,21 @@
 namespace EnterpriseAutomation.ViewModels;
 
+// Kept as a compatibility wrapper for older code paths and the home dashboard view.
 public class DashboardViewModel
 {
-    public int ClientsCount { get; set; }
-    public int RequestsCount { get; set; }
-    public int OrdersCount { get; set; }
-    public decimal OrdersAmount { get; set; }
-    public int UnpaidOrdersCount { get; set; }
+    public bool IsAuthenticated { get; set; }
+
+    public DashboardQuery Query { get; set; } = new();
+
+    public DashboardSnapshot? Snapshot { get; set; }
+
+    public int ClientsCount => Snapshot?.Metrics.ClientsCount ?? 0;
+
+    public int RequestsCount => Snapshot?.Metrics.RequestsCount ?? 0;
+
+    public int OrdersCount => Snapshot?.Metrics.OrdersCount ?? 0;
+
+    public decimal OrdersAmount => Snapshot?.Metrics.RevenueAmount ?? 0;
+
+    public int UnpaidOrdersCount => Snapshot?.Metrics.UnpaidOrdersCount ?? 0;
 }

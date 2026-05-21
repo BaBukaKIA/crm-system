@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Dmitri Plotnikov\\Desktop\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj": {}
+    "C:\\Users\\Dmitri Plotnikov\\Desktop\\Документация\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Dmitri Plotnikov\\Desktop\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj": {
+    "C:\\Users\\Dmitri Plotnikov\\Desktop\\Документация\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Dmitri Plotnikov\\Desktop\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj",
+        "projectUniqueName": "C:\\Users\\Dmitri Plotnikov\\Desktop\\Документация\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj",
         "projectName": "EnterpriseAutomation",
-        "projectPath": "C:\\Users\\Dmitri Plotnikov\\Desktop\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj",
+        "projectPath": "C:\\Users\\Dmitri Plotnikov\\Desktop\\Документация\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj",
         "packagesPath": "C:\\Users\\Dmitri Plotnikov\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Dmitri Plotnikov\\Desktop\\EnterpriseAutomation\\EnterpriseAutomation\\obj\\",
+        "outputPath": "C:\\Users\\Dmitri Plotnikov\\Desktop\\Документация\\EnterpriseAutomation\\EnterpriseAutomation\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

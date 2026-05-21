@@ -15,12 +15,26 @@ public class ClientsApiController : ControllerBase
     public ClientsApiController(AppDbContext db) => _db = db;
 
     [HttpGet]
-    public async Task<IActionResult> Get(string? search) =>
-        Ok(await _db.Clients.Where(x => search == null || x.Name.Contains(search) || (x.Email ?? "").Contains(search)).ToListAsync());
+    public async Task<IActionResult> Get(string? search)
+    {
+        var searchTerm = search?.Trim();
+        var query = _db.Clients.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(x =>
+                x.Name.Contains(searchTerm!) ||
+                (x.Email != null && x.Email.Contains(searchTerm!)));
+        }
+
+        return Ok(await query.ToListAsync());
+    }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id) =>
-        await _db.Clients.FindAsync(id) is { } client ? Ok(client) : NotFound(new { message = "Клиент не найден" });
+        await _db.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) is { } client
+            ? Ok(client)
+            : NotFound(new { message = "Клиент не найден" });
 
     [HttpPost]
     public async Task<IActionResult> Create(Client client)

@@ -1,26 +1,121 @@
 @model EnterpriseAutomation.ViewModels.LoginViewModel
-@{ ViewData["Title"] = "Вход"; }
+@{
+    ViewData["Title"] = "Вход";
+}
 
-<div class="auth-panel">
-    <h1>Вход в систему</h1>
-    <form asp-action="Login" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="mb-3">
-            <label asp-for="Login" class="form-label"></label>
-            <input asp-for="Login" class="form-control" autofocus />
-            <span asp-validation-for="Login" class="text-danger"></span>
+<section class="login-shell" aria-labelledby="loginTitle">
+    <div class="login-panel">
+        <div class="login-panel__main">
+            <h1 id="loginTitle">Вход в систему</h1>
+            <p>Используйте учетную запись, чтобы перейти к работе.</p>
+
+            <form asp-action="Login" method="post" class="login-form">
+                <input asp-for="ReturnUrl" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="validation-summary login-validation"></div>
+
+                <div class="form-field">
+                    <label asp-for="Login" class="form-label"></label>
+                    <div class="login-input">
+                        <span class="login-input__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+                                <path d="M4 20a8 8 0 0 1 16 0"></path>
+                            </svg>
+                        </span>
+                        <input asp-for="Login" class="form-control" autocomplete="username" inputmode="text" autofocus />
+                    </div>
+                    <span asp-validation-for="Login" class="field-validation text-danger"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Password" class="form-label"></label>
+                    <div class="login-input login-input--password">
+                        <span class="login-input__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+                                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                            </svg>
+                        </span>
+                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                        <button class="login-password-toggle" type="button" data-password-toggle aria-label="Показать пароль" aria-pressed="false">
+                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-validation text-danger"></span>
+                </div>
+
+                <div class="login-form__row">
+                    <label class="login-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <span>@Html.DisplayNameFor(model => model.RememberMe)</span>
+                    </label>
+                </div>
+
+                <button class="btn btn-primary login-submit" type="submit">
+                    <span>Войти</span>
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+                    </svg>
+                </button>
+
+                <div class="demo-credentials demo-credentials--compact" aria-label="Быстрый выбор учетной записи">
+                    <button class="demo-account" type="button" data-demo-login="admin" data-demo-password="admin123">
+                        <span class="demo-account__badge">A</span>
+                        <span>
+                            <strong>Администратор</strong>
+                            <small>admin / admin123</small>
+                        </span>
+                    </button>
+                    <button class="demo-account" type="button" data-demo-login="manager" data-demo-password="manager123">
+                        <span class="demo-account__badge">M</span>
+                        <span>
+                            <strong>Иван Петров</strong>
+                            <small>manager / manager123</small>
+                        </span>
+                    </button>
+                    <button class="demo-account" type="button" data-demo-login="manager2" data-demo-password="manager123">
+                        <span class="demo-account__badge">M2</span>
+                        <span>
+                            <strong>Анна Соколова</strong>
+                            <small>manager2 / manager123</small>
+                        </span>
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <button class="btn btn-primary w-100">Войти</button>
-    </form>
-    <div class="small text-muted mt-3">
-        Администратор: admin / admin123<br />
-        Менеджер: manager / manager123
     </div>
-</div>
+</section>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginInput = document.getElementById('Login');
+            const passwordInput = document.getElementById('Password');
+            const toggle = document.querySelector('[data-password-toggle]');
+
+            document.querySelectorAll('[data-demo-login]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    loginInput.value = button.dataset.demoLogin || '';
+                    passwordInput.value = button.dataset.demoPassword || '';
+                    loginInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    passwordInput.focus();
+                });
+            });
+
+            if (toggle) {
+                toggle.addEventListener('click', () => {
+                    const isPassword = passwordInput.type === 'password';
+                    passwordInput.type = isPassword ? 'text' : 'password';
+                    toggle.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+                    toggle.setAttribute('aria-label', isPassword ? 'Скрыть пароль' : 'Показать пароль');
+                });
+            }
+        });
+    </script>
+}

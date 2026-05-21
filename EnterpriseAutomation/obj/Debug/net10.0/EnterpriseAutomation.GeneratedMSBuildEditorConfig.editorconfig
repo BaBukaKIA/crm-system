@@ -19,113 +19,113 @@ build_property.TargetFrameworkIdentifier = .NETCoreApp
 build_property.TargetFrameworkVersion = v10.0
 build_property.RootNamespace = EnterpriseAutomation
 build_property.RootNamespace = EnterpriseAutomation
-build_property.ProjectDir = C:\Users\Dmitri Plotnikov\Desktop\EnterpriseAutomation\EnterpriseAutomation\
+build_property.ProjectDir = C:\Users\Dmitri Plotnikov\Desktop\Документация\EnterpriseAutomation\EnterpriseAutomation\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\Dmitri Plotnikov\Desktop\EnterpriseAutomation\EnterpriseAutomation
+build_property.MSBuildProjectDirectory = C:\Users\Dmitri Plotnikov\Desktop\Документация\EnterpriseAutomation\EnterpriseAutomation
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Account/AccessDenied.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Account/AccessDenied.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Account/Login.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Create.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50c1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Delete.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50c1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Edit.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50c1xFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Index.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50c1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/_ClientForm.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Clients/_ClientForm.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50c1xfQ2xpZW50Rm9ybS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Home/Index.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Home/Privacy.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Create.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Delete.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Edit.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Index.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/_OrderForm.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Orders/_OrderForm.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXF9PcmRlckZvcm0uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Reports/Index.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Reports/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Create.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVxdWVzdHNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Delete.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVxdWVzdHNcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Edit.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVxdWVzdHNcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Index.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVxdWVzdHNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/_RequestForm.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Requests/_RequestForm.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVxdWVzdHNcX1JlcXVlc3RGb3JtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Shared/Error.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/_ViewImports.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/_ViewStart.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Dmitri Plotnikov/Desktop/EnterpriseAutomation/EnterpriseAutomation/Views/Shared/_Layout.cshtml]
+[C:/Users/Dmitri Plotnikov/Desktop/Документация/EnterpriseAutomation/EnterpriseAutomation/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-vmau4fzdrd

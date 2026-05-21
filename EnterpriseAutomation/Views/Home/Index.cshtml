@@ -1,7 +1,18 @@
+@using EnterpriseAutomation.ViewModels
 @model EnterpriseAutomation.ViewModels.DashboardViewModel
 
 @{
     ViewData["Title"] = "Главная панель";
+
+    var snapshot = Model.Snapshot;
+    var metrics = snapshot?.Metrics;
+    var openRequestsCount = metrics?.OpenRequestsCount ?? 0;
+    var activeOrdersCount = metrics?.ActiveOrdersCount ?? 0;
+    var overdueOrdersCount = metrics?.OverdueOrdersCount ?? 0;
+    var chartPoints = snapshot?.RevenueTrend.Where(x => x.Value > 0).ToList() ?? new List<DashboardTrendPoint>();
+    var topClients = snapshot?.TopClients.Take(5).ToList() ?? new List<DashboardTopClientItem>();
+    var attentionItems = snapshot?.AttentionItems.Take(6).ToList() ?? new List<DashboardAttentionItem>();
+    var maxRevenue = chartPoints.Count > 0 ? chartPoints.Max(x => x.Value) : 0m;
 
     var sections = new[]
     {
@@ -10,75 +21,203 @@
             Title = "Клиенты",
             Description = "Единая база организаций и физических лиц, контакты и рабочие заметки.",
             Controller = "Clients",
-            Icon = "clients"
+            Icon = "clients",
+            Metric = $"{Model.ClientsCount} записей"
         },
         new
         {
             Title = "Заявки",
             Description = "Обращения клиентов, ответственные менеджеры и текущие статусы обработки.",
             Controller = "Requests",
-            Icon = "requests"
+            Icon = "requests",
+            Metric = $"{openRequestsCount} активных"
         },
         new
         {
             Title = "Заказы",
             Description = "Состав услуг, суммы, сроки выполнения и контроль оплаты по заказам.",
             Controller = "Orders",
-            Icon = "orders"
+            Icon = "orders",
+            Metric = $"{activeOrdersCount} в работе"
         },
         new
         {
-            Title = "Отчёты",
+            Title = "Отчеты",
             Description = "Сводки по периодам, статусам, выручке и наиболее активным клиентам.",
             Controller = "Reports",
-            Icon = "reports"
+            Icon = "reports",
+            Metric = $"{Model.OrdersAmount.ToString("N0")} ₽"
         }
     };
 }
 
 @if (User.Identity?.IsAuthenticated != true)
 {
-    <div class="dashboard-auth">
-        <div>
-            <h2>Войдите в систему</h2>
-            <p>После входа откроются разделы панели, рабочие списки и оперативная статистика.</p>
-        </div>
+    <div class="auth-panel auth-panel--welcome">
+        <span class="panel-kicker">Enterprise Automation</span>
+        <h1>Войдите в систему</h1>
+        <p>После входа откроются разделы панели, рабочие списки и оперативная статистика.</p>
         <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Войти в систему</a>
     </div>
 }
 else
 {
     <section class="dashboard-stats" aria-label="Краткая статистика">
-        <article class="dashboard-stat">
-            <span class="dashboard-stat__label">Клиенты</span>
+        <article class="dashboard-stat dashboard-stat--clients">
+            <div class="dashboard-stat__top">
+                <span class="dashboard-stat__label">Клиенты</span>
+                <span class="metric-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M16 11a4 4 0 1 0-2.9-6.76A5 5 0 0 1 12 11h4Zm-8 0a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.7-6 3.8V20h12v-3.2C14 14.7 11.3 13 8 13Zm8 0c-.8 0-1.5.1-2.2.3 1.4.9 2.2 2.1 2.2 3.5V20h6v-3.2c0-2.1-2.7-3.8-6-3.8Z" /></svg>
+                </span>
+            </div>
             <strong>@Model.ClientsCount</strong>
             <span class="dashboard-stat__hint">в базе системы</span>
         </article>
-        <article class="dashboard-stat">
-            <span class="dashboard-stat__label">Заявки</span>
+        <article class="dashboard-stat dashboard-stat--requests">
+            <div class="dashboard-stat__top">
+                <span class="dashboard-stat__label">Заявки</span>
+                <span class="metric-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M5 3h10l4 4v14H5V3Zm9 1.8V8h3.2L14 4.8ZM8 11h8V9.5H8V11Zm0 3.5h8V13H8v1.5Zm0 3.5h5v-1.5H8V18Z" /></svg>
+                </span>
+            </div>
             <strong>@Model.RequestsCount</strong>
-            <span class="dashboard-stat__hint">зарегистрировано</span>
+            <span class="dashboard-stat__hint">@openRequestsCount требуют обработки</span>
         </article>
-        <article class="dashboard-stat">
-            <span class="dashboard-stat__label">Заказы</span>
+        <article class="dashboard-stat dashboard-stat--orders">
+            <div class="dashboard-stat__top">
+                <span class="dashboard-stat__label">Заказы</span>
+                <span class="metric-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M4 5h16v3H4V5Zm1 5h14l-1.2 9H6.2L5 10Zm4 2v5h1.7v-5H9Zm4.3 0v5H15v-5h-1.7Z" /></svg>
+                </span>
+            </div>
             <strong>@Model.OrdersCount</strong>
-            <span class="dashboard-stat__hint">создано из заявок</span>
+            <span class="dashboard-stat__hint">@activeOrdersCount в работе, @overdueOrdersCount просрочено</span>
         </article>
-        <article class="dashboard-stat">
-            <span class="dashboard-stat__label">Сумма заказов</span>
+        <article class="dashboard-stat dashboard-stat--revenue">
+            <div class="dashboard-stat__top">
+                <span class="dashboard-stat__label">Сумма заказов</span>
+                <span class="metric-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M4 19h16v2H4v-2Zm2-8h3v6H6v-6Zm5-6h3v12h-3V5Zm5 3h3v9h-3V8Z" /></svg>
+                </span>
+            </div>
             <strong>@Model.OrdersAmount.ToString("N0") ₽</strong>
-            <span class="dashboard-stat__hint">@Model.UnpaidOrdersCount неоплачено полностью</span>
+            <span class="dashboard-stat__hint">@Model.UnpaidOrdersCount не оплачено полностью</span>
+        </article>
+    </section>
+
+    <section class="dashboard-attention" aria-label="Оперативные задачи">
+        <article class="dashboard-panel dashboard-panel--attention">
+            <div class="dashboard-panel__head">
+                <div>
+                    <span class="panel-kicker">Контроль</span>
+                    <h2>Оперативные задачи</h2>
+                </div>
+                <a class="dashboard-panel__link" asp-controller="Orders" asp-action="Index">Заказы</a>
+            </div>
+            @if (attentionItems.Count > 0)
+            {
+                <div class="attention-list">
+                    @foreach (var item in attentionItems)
+                    {
+                        <a class="attention-item attention-item--@item.Tone" href="@item.DetailUrl">
+                            <span class="attention-item__marker" aria-hidden="true"></span>
+                            <span class="attention-item__body">
+                                <strong>@item.Title</strong>
+                                <span>@item.Details</span>
+                            </span>
+                            <span class="attention-item__meta">
+                                <span class="attention-item__badge">@item.Badge</span>
+                                <span class="attention-item__action">@item.ActionLabel</span>
+                            </span>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">Срочных задач нет: заявки и заказы идут по плану.</div>
+            }
+        </article>
+    </section>
+
+    <section class="dashboard-analytics" aria-label="Аналитика системы">
+        <article class="dashboard-panel dashboard-panel--chart">
+            <div class="dashboard-panel__head">
+                <div>
+                    <span class="panel-kicker">Динамика</span>
+                    <h2>Выручка по срокам заказов</h2>
+                </div>
+                <a class="dashboard-panel__link" asp-controller="Reports" asp-action="Index">Отчеты</a>
+            </div>
+            @if (chartPoints.Count > 0)
+            {
+                <div class="revenue-chart" role="img" aria-label="График выручки по датам">
+                    @foreach (var point in chartPoints)
+                    {
+                        var barHeight = maxRevenue > 0 ? Math.Max(12, (int)Math.Round(point.Value / maxRevenue * 100)) : 0;
+                        <div class="revenue-chart__item">
+                            <div class="revenue-chart__bar-track">
+                                <span class="revenue-chart__bar" style="--bar-height: @barHeight%;" title="@point.Label: @point.Value.ToString("N0") ₽"></span>
+                            </div>
+                            <span class="revenue-chart__value">@point.Value.ToString("N0") ₽</span>
+                            <span class="revenue-chart__label">@point.Label</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">Пока нет заказов для графика.</div>
+            }
+        </article>
+
+        <article class="dashboard-panel">
+            <div class="dashboard-panel__head">
+                <div>
+                    <span class="panel-kicker">Клиенты</span>
+                    <h2>Топ по сумме заказов</h2>
+                </div>
+                <a class="dashboard-panel__link" asp-controller="Clients" asp-action="Index">Клиенты</a>
+            </div>
+            @if (topClients.Count > 0)
+            {
+                <div class="dashboard-table-wrap">
+                    <table class="dashboard-mini-table">
+                        <thead>
+                            <tr>
+                                <th>Клиент</th>
+                                <th class="text-end">Заказов</th>
+                                <th class="text-end">Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var clientRank = 1;
+                            }
+                            @foreach (var client in topClients)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="client-rank">@clientRank</span>
+                                        <span>@client.Name</span>
+                                    </td>
+                                    <td class="text-end">@client.OrdersCount</td>
+                                    <td class="text-end">@client.TotalAmount.ToString("N0") ₽</td>
+                                </tr>
+                                clientRank += 1;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">Данные появятся после создания заказов.</div>
+            }
         </article>
     </section>
 
     <section class="dashboard-section">
-        <div class="section-head">
-            <div>
-                <h2>Основные разделы</h2>
-                <p>Быстрый переход к ключевым рабочим областям системы.</p>
-            </div>
-        </div>
-
         <div class="dashboard-grid">
             @foreach (var item in sections)
             {
@@ -102,10 +241,14 @@ else
                         }
                     </span>
                     <span class="dashboard-card__body">
+                        <span class="dashboard-card__meta">@item.Metric</span>
                         <strong>@item.Title</strong>
                         <span>@item.Description</span>
                     </span>
-                    <span class="dashboard-card__action">Открыть</span>
+                    <span class="dashboard-card__action">
+                        <span>Открыть</span>
+                        <span aria-hidden="true">→</span>
+                    </span>
                 </a>
             }
         </div>

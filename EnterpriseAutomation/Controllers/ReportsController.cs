@@ -21,7 +21,10 @@ public class ReportsController : Controller
             To = to ?? DateTime.Today
         };
 
-        ViewBag.Statuses = new SelectList(await _db.RequestStatuses.OrderBy(x => x.Name).ToListAsync(), "Id", "Name");
+        ViewBag.Statuses = new SelectList(
+            await _db.RequestStatuses.AsNoTracking().OrderBy(x => x.Name).ToListAsync(),
+            "Id",
+            "Name");
 
         return View(model);
     }

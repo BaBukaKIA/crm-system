@@ -1,10 +1,63 @@
 @model EnterpriseAutomation.Models.Client
-<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="edit-form">
+
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="edit-form entity-form">
     <input type="hidden" asp-for="Id" />
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="mb-3"><label asp-for="Name" class="form-label">ФИО/название</label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name" class="text-danger"></span></div>
-    <div class="row"><div class="col-md-6 mb-3"><label asp-for="Phone" class="form-label">Телефон</label><input asp-for="Phone" class="form-control" /></div><div class="col-md-6 mb-3"><label asp-for="Email" class="form-label">Email</label><input asp-for="Email" class="form-control" /></div></div>
-    <div class="mb-3"><label asp-for="Address" class="form-label">Адрес</label><input asp-for="Address" class="form-control" /></div>
-    <div class="mb-3"><label asp-for="Note" class="form-label">Примечание</label><textarea asp-for="Note" class="form-control" rows="3"></textarea></div>
-    <button class="btn btn-primary">Сохранить</button> <a class="btn btn-secondary" asp-action="Index">Назад</a>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <section class="form-section">
+        <div class="form-section__head">
+            <div>
+                <h2>Контактные данные</h2>
+                <p>Основная информация для связи и поиска клиента.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-field form-field--full">
+                <label asp-for="Name" class="form-label">ФИО/название</label>
+                <input asp-for="Name" class="form-control" autocomplete="organization" placeholder="Например: ООО Альфа" />
+                <span asp-validation-for="Name" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="Phone" class="form-label">Телефон</label>
+                <input asp-for="Phone" type="tel" class="form-control" autocomplete="tel" placeholder="+7 900 000-00-00" />
+                <span asp-validation-for="Phone" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" type="email" class="form-control" autocomplete="email" placeholder="client@example.ru" />
+                <span asp-validation-for="Email" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field form-field--full">
+                <label asp-for="Address" class="form-label">Адрес</label>
+                <input asp-for="Address" class="form-control" autocomplete="street-address" placeholder="Город, улица, дом" />
+                <span asp-validation-for="Address" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field form-field--full">
+                <label asp-for="Note" class="form-label">Примечание</label>
+                <textarea asp-for="Note" class="form-control form-control--textarea" rows="4" placeholder="Важные детали по клиенту"></textarea>
+                <span asp-validation-for="Note" class="text-danger field-validation"></span>
+            </div>
+        </div>
+    </section>
+
+    <div class="form-actions">
+        <button class="btn btn-primary form-action-btn" type="submit">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M20 7 10 17l-5-5"></path>
+            </svg>
+            <span>Сохранить</span>
+        </button>
+        <a class="btn btn-secondary form-action-btn" asp-action="Index">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M19 12H5"></path>
+                <path d="m12 19-7-7 7-7"></path>
+            </svg>
+            <span>Назад</span>
+        </a>
+    </div>
 </form>

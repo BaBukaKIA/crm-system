@@ -1,14 +1,69 @@
 @model EnterpriseAutomation.Models.Order
-<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="edit-form">
+
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="edit-form entity-form">
     <input type="hidden" asp-for="Id" />
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="mb-3"><label asp-for="ServiceRequestId" class="form-label"></label><select asp-for="ServiceRequestId" asp-items="ViewBag.Requests" class="form-select"></select><span asp-validation-for="ServiceRequestId" class="text-danger"></span></div>
-    <div class="mb-3"><label asp-for="Services" class="form-label"></label><textarea asp-for="Services" class="form-control" rows="4"></textarea><span asp-validation-for="Services" class="text-danger"></span></div>
-    <div class="row">
-        <div class="col-md-4 mb-3"><label asp-for="Amount" class="form-label"></label><input asp-for="Amount" class="form-control" /></div>
-        <div class="col-md-4 mb-3"><label asp-for="DueDate" class="form-label"></label><input asp-for="DueDate" type="date" class="form-control" /></div>
-        <div class="col-md-4 mb-3"><label asp-for="PaymentStatusId" class="form-label"></label><select asp-for="PaymentStatusId" asp-items="ViewBag.PaymentStatuses" class="form-select"></select></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <section class="form-section">
+        <div class="form-section__head">
+            <div>
+                <h2>Параметры заказа</h2>
+                <p>Связанная заявка, состав услуг, сумма и текущие статусы.</p>
+            </div>
+        </div>
+
+        <div class="form-grid form-grid--three">
+            <div class="form-field form-field--full">
+                <label asp-for="ServiceRequestId" class="form-label"></label>
+                <select asp-for="ServiceRequestId" asp-items="ViewBag.Requests" class="form-select"></select>
+                <span asp-validation-for="ServiceRequestId" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field form-field--full">
+                <label asp-for="Services" class="form-label"></label>
+                <textarea asp-for="Services" class="form-control form-control--textarea" rows="5" placeholder="Перечислите услуги по заказу"></textarea>
+                <span asp-validation-for="Services" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="Amount" class="form-label"></label>
+                <input asp-for="Amount" class="form-control" inputmode="decimal" autocomplete="off" />
+                <span asp-validation-for="Amount" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="DueDate" class="form-label"></label>
+                <input asp-for="DueDate" type="date" class="form-control" />
+                <span asp-validation-for="DueDate" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="PaymentStatusId" class="form-label"></label>
+                <select asp-for="PaymentStatusId" asp-items="ViewBag.PaymentStatuses" class="form-select"></select>
+                <span asp-validation-for="PaymentStatusId" class="text-danger field-validation"></span>
+            </div>
+
+            <div class="form-field form-field--full">
+                <label asp-for="ExecutionStatusId" class="form-label"></label>
+                <select asp-for="ExecutionStatusId" asp-items="ViewBag.ExecutionStatuses" class="form-select"></select>
+                <span asp-validation-for="ExecutionStatusId" class="text-danger field-validation"></span>
+            </div>
+        </div>
+    </section>
+
+    <div class="form-actions">
+        <button class="btn btn-primary form-action-btn" type="submit">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M20 7 10 17l-5-5"></path>
+            </svg>
+            <span>Сохранить</span>
+        </button>
+        <a class="btn btn-secondary form-action-btn" asp-action="Index">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M19 12H5"></path>
+                <path d="m12 19-7-7 7-7"></path>
+            </svg>
+            <span>Назад</span>
+        </a>
     </div>
-    <div class="mb-3"><label asp-for="ExecutionStatusId" class="form-label"></label><select asp-for="ExecutionStatusId" asp-items="ViewBag.ExecutionStatuses" class="form-select"></select></div>
-    <button class="btn btn-primary">Сохранить</button> <a class="btn btn-secondary" asp-action="Index">Назад</a>
 </form>

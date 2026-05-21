@@ -1,117 +1,228 @@
 @model EnterpriseAutomation.ViewModels.ReportsViewModel
 @{
-    ViewData["Title"] = "Отчёты";
+    ViewData["Title"] = "Отчеты";
 }
 
-<div class="section-head">
-    <div>
-        <h1>Отчёты</h1>
-        <p class="text-muted mb-0">Сводные таблицы по заказам, заявкам и клиентам.</p>
+<div class="section-head reports-head">
+    <div class="reports-head__content">
+        <span class="panel-kicker">Аналитика</span>
+        <h1>Отчеты</h1>
+        <p>Финансы, статусы заявок и клиенты.</p>
     </div>
+    <form class="reports-period-picker" data-report-period-form method="get">
+        <div class="reports-period-picker__title">
+            <span>
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <rect x="4" y="5" width="16" height="15" rx="3"></rect>
+                    <path d="M8 3v4"></path>
+                    <path d="M16 3v4"></path>
+                    <path d="M4 10h16"></path>
+                </svg>
+                Период отчета
+            </span>
+            <strong data-report-period-summary>@Model.From.ToString("dd.MM.yyyy") - @Model.To.ToString("dd.MM.yyyy")</strong>
+        </div>
+        <div class="reports-period-picker__fields">
+            <label class="reports-period-picker__field" for="periodFrom">
+                <span>Дата от</span>
+                <input id="periodFrom" name="from" value="@Model.From.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+            </label>
+            <label class="reports-period-picker__field" for="periodTo">
+                <span>Дата до</span>
+                <input id="periodTo" name="to" value="@Model.To.ToString("yyyy-MM-dd")" type="date" class="form-control" />
+            </label>
+        </div>
+        <div class="reports-period-picker__actions">
+            <button class="btn btn-outline-secondary" type="button" data-range="7">7 дней</button>
+            <button class="btn btn-outline-secondary" type="button" data-range="30">30 дней</button>
+            <button class="btn btn-outline-secondary" type="button" data-range="month">Месяц</button>
+            <button class="btn btn-primary" type="submit">Показать</button>
+        </div>
+    </form>
 </div>
 
-<div class="row g-4">
-    <div class="col-12">
-        <section class="report-card" data-report="orders">
-            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
-                <div>
-                    <h2>Заказы за период</h2>
-                    <div class="report-status" data-report-status></div>
-                </div>
-                <button class="btn btn-outline-primary" type="button" data-download="orders" disabled>Скачать CSV</button>
-            </div>
-            <form class="report-actions" data-report-form="orders">
-                <div>
-                    <label class="form-label" for="ordersFrom">Дата от</label>
-                    <input id="ordersFrom" name="from" value="@Model.From.ToString("yyyy-MM-dd")" type="date" class="form-control" />
-                </div>
-                <div>
-                    <label class="form-label" for="ordersTo">Дата до</label>
-                    <input id="ordersTo" name="to" value="@Model.To.ToString("yyyy-MM-dd")" type="date" class="form-control" />
-                </div>
-                <button class="btn btn-primary" type="submit">Показать</button>
-            </form>
-            <div class="table-responsive">
-                <table class="table table-sm table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Клиент</th>
-                            <th>Услуги</th>
-                            <th class="text-end">Сумма</th>
-                            <th>Срок</th>
-                            <th>Оплата</th>
-                            <th>Исполнение</th>
-                        </tr>
-                    </thead>
-                    <tbody data-report-body="orders"></tbody>
-                </table>
-            </div>
-        </section>
-    </div>
+<section class="report-kpis" aria-label="Ключевые показатели отчетов">
+    <article class="report-kpi report-kpi--revenue">
+        <div class="report-kpi__top">
+            <span class="report-kpi__label">Выручка</span>
+            <span class="report-kpi__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 4-6"></path><path d="M17 8h-4"></path><path d="M17 8v4"></path></svg>
+            </span>
+        </div>
+        <strong data-report-kpi="revenue">0 ₽</strong>
+        <span data-report-kpi-hint="revenue">по загруженному периоду</span>
+    </article>
+    <article class="report-kpi report-kpi--orders">
+        <div class="report-kpi__top">
+            <span class="report-kpi__label">Заказы</span>
+            <span class="report-kpi__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M6 4h12v16H6z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path><path d="M9 16h3"></path></svg>
+            </span>
+        </div>
+        <strong data-report-kpi="orders">0</strong>
+        <span data-report-kpi-hint="orders">в таблице заказов</span>
+    </article>
+    <article class="report-kpi report-kpi--average">
+        <div class="report-kpi__top">
+            <span class="report-kpi__label">Средний чек</span>
+            <span class="report-kpi__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M5 19V5"></path><path d="M5 19h14"></path><path d="M9 16v-5"></path><path d="M13 16V8"></path><path d="M17 16v-3"></path></svg>
+            </span>
+        </div>
+        <strong data-report-kpi="average">0 ₽</strong>
+        <span data-report-kpi-hint="average">на один заказ</span>
+    </article>
+    <article class="report-kpi report-kpi--attention">
+        <div class="report-kpi__top">
+            <span class="report-kpi__label">К оплате</span>
+            <span class="report-kpi__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M4 7h16v10H4z"></path><path d="M4 10h16"></path><path d="M8 15h4"></path></svg>
+            </span>
+        </div>
+        <strong data-report-kpi="unpaid">0</strong>
+        <span data-report-kpi-hint="unpaid">заказов не оплачено полностью</span>
+    </article>
+</section>
 
-    <div class="col-lg-6">
-        <section class="report-card h-100" data-report="requests">
-            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
-                <div>
-                    <h2>Заявки по статусам</h2>
-                    <div class="report-status" data-report-status></div>
-                </div>
-                <button class="btn btn-outline-primary" type="button" data-download="requests" disabled>Скачать CSV</button>
+<section class="report-insights" aria-label="Визуальная сводка отчетов">
+    <article class="report-insight">
+        <div class="report-insight__head">
+            <div>
+                <span class="panel-kicker">Финансы</span>
+                <h2>Оплата заказов</h2>
             </div>
-            <form class="report-actions" data-report-form="requests">
-                <div>
-                    <label class="form-label" for="requestStatus">Статус</label>
-                    <select id="requestStatus" name="statusId" asp-items="ViewBag.Statuses" class="form-select">
-                        <option value="">Все статусы</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" type="submit">Показать</button>
-            </form>
-            <div class="table-responsive">
-                <table class="table table-sm table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Статус</th>
-                            <th class="text-end">Количество</th>
-                        </tr>
-                    </thead>
-                    <tbody data-report-body="requests"></tbody>
-                </table>
+            <span class="report-insight__metric" data-report-kpi="paidShare">0%</span>
+        </div>
+        <div class="report-segment" data-report-breakdown="payment"></div>
+        <div class="report-legend" data-report-legend="payment"></div>
+    </article>
+    <article class="report-insight">
+        <div class="report-insight__head">
+            <div>
+                <span class="panel-kicker">Производство</span>
+                <h2>Исполнение заказов</h2>
             </div>
-        </section>
-    </div>
+            <span class="report-insight__metric" data-report-kpi="completedShare">0%</span>
+        </div>
+        <div class="report-bars" data-report-breakdown="execution"></div>
+    </article>
+    <article class="report-insight">
+        <div class="report-insight__head">
+            <div>
+                <span class="panel-kicker">Клиенты</span>
+                <h2>Лидеры по выручке</h2>
+            </div>
+        </div>
+        <div class="client-revenue-list" data-report-client-bars></div>
+    </article>
+</section>
 
-    <div class="col-lg-6">
-        <section class="report-card h-100" data-report="clients">
-            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
-                <div>
-                    <h2>Клиенты</h2>
-                    <div class="report-status" data-report-status></div>
-                </div>
-                <button class="btn btn-outline-primary" type="button" data-download="clients" disabled>Скачать CSV</button>
+<div class="reports-layout">
+    <section class="report-card report-card--wide" data-report="orders">
+        <div class="report-card__head">
+            <div>
+                <span class="panel-kicker">Заказы</span>
+                <h2>Заказы за период</h2>
+                <div class="report-status" data-report-status></div>
             </div>
-            <form class="report-actions" data-report-form="clients">
-                <div>
-                    <label class="form-label" for="clientsTake">Топ клиентов</label>
-                    <input id="clientsTake" name="take" value="10" min="1" max="100" type="number" class="form-control" />
-                </div>
-                <button class="btn btn-primary" type="submit">Показать</button>
-            </form>
-            <div class="table-responsive">
-                <table class="table table-sm table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Клиент</th>
-                            <th class="text-end">Заказов</th>
-                            <th class="text-end">Сумма</th>
-                        </tr>
-                    </thead>
-                    <tbody data-report-body="clients"></tbody>
-                </table>
+            <button class="btn btn-outline-primary report-download" type="button" data-download="orders" disabled>Скачать CSV</button>
+        </div>
+
+        <form hidden data-report-form="orders">
+            <input id="ordersFrom" name="from" value="@Model.From.ToString("yyyy-MM-dd")" type="hidden" />
+            <input id="ordersTo" name="to" value="@Model.To.ToString("yyyy-MM-dd")" type="hidden" />
+        </form>
+
+        <div class="report-card-metrics" aria-label="Итоги таблицы заказов">
+            <span><strong data-orders-total>0 ₽</strong> сумма</span>
+            <span><strong data-orders-paid>0</strong> оплачено</span>
+            <span><strong data-orders-overdue>0</strong> просрочено</span>
+        </div>
+
+        <div class="table-responsive report-table-wrap">
+            <table class="table table-sm table-striped align-middle report-table">
+                <thead>
+                    <tr>
+                        <th><button type="button" data-sort-report="orders" data-sort-key="orderId">#</button></th>
+                        <th><button type="button" data-sort-report="orders" data-sort-key="clientName">Клиент</button></th>
+                        <th>Услуги</th>
+                        <th class="text-end"><button type="button" data-sort-report="orders" data-sort-key="amount">Сумма</button></th>
+                        <th><button type="button" data-sort-report="orders" data-sort-key="dueDate">Срок</button></th>
+                        <th>Оплата</th>
+                        <th>Исполнение</th>
+                    </tr>
+                </thead>
+                <tbody data-report-body="orders"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="report-card" data-report="requests">
+        <div class="report-card__head">
+            <div>
+                <span class="panel-kicker">Заявки</span>
+                <h2>Заявки по статусам</h2>
+                <div class="report-status" data-report-status></div>
             </div>
-        </section>
-    </div>
+            <button class="btn btn-outline-primary report-download" type="button" data-download="requests" disabled>Скачать CSV</button>
+        </div>
+
+        <form class="report-actions" data-report-form="requests">
+            <div class="form-field">
+                <label class="form-label" for="requestStatus">Статус</label>
+                <select id="requestStatus" name="statusId" asp-items="ViewBag.Statuses" class="form-select">
+                    <option value="">Все статусы</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit">Показать</button>
+        </form>
+
+        <div class="report-distribution" data-report-request-bars></div>
+
+        <div class="table-responsive report-table-wrap">
+            <table class="table table-sm table-striped align-middle report-table">
+                <thead>
+                    <tr>
+                        <th><button type="button" data-sort-report="requests" data-sort-key="status">Статус</button></th>
+                        <th class="text-end"><button type="button" data-sort-report="requests" data-sort-key="count">Количество</button></th>
+                    </tr>
+                </thead>
+                <tbody data-report-body="requests"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="report-card" data-report="clients">
+        <div class="report-card__head">
+            <div>
+                <span class="panel-kicker">Клиенты</span>
+                <h2>Клиенты</h2>
+                <div class="report-status" data-report-status></div>
+            </div>
+            <button class="btn btn-outline-primary report-download" type="button" data-download="clients" disabled>Скачать CSV</button>
+        </div>
+
+        <form class="report-actions" data-report-form="clients">
+            <div class="form-field">
+                <label class="form-label" for="clientsTake">Топ клиентов</label>
+                <input id="clientsTake" name="take" value="10" min="1" max="100" type="number" class="form-control" />
+            </div>
+            <button class="btn btn-primary" type="submit">Показать</button>
+        </form>
+
+        <div class="table-responsive report-table-wrap">
+            <table class="table table-sm table-striped align-middle report-table">
+                <thead>
+                    <tr>
+                        <th><button type="button" data-sort-report="clients" data-sort-key="clientName">Клиент</button></th>
+                        <th class="text-end"><button type="button" data-sort-report="clients" data-sort-key="ordersCount">Заказов</button></th>
+                        <th class="text-end"><button type="button" data-sort-report="clients" data-sort-key="totalAmount">Сумма</button></th>
+                    </tr>
+                </thead>
+                <tbody data-report-body="clients"></tbody>
+            </table>
+        </div>
+    </section>
 </div>
 
 @section Scripts {
@@ -122,11 +233,21 @@
             clients: []
         };
 
+        const sortState = {
+            orders: { key: 'dueDate', direction: 'asc' },
+            requests: { key: 'count', direction: 'desc' },
+            clients: { key: 'totalAmount', direction: 'desc' }
+        };
+
+        const reportControllers = {};
+
+        const tonePalette = ['info', 'success', 'warning', 'danger', 'neutral'];
+
         const reportConfig = {
             orders: {
                 fileName: 'orders_report.csv',
                 headers: ['Номер', 'Клиент', 'Услуги', 'Сумма', 'Срок', 'Оплата', 'Исполнение'],
-                rows: () => reportState.orders.map((item) => [
+                rows: () => getSortedItems('orders').map((item) => [
                     item.orderId,
                     item.clientName,
                     item.services,
@@ -139,19 +260,24 @@
             requests: {
                 fileName: 'requests_report.csv',
                 headers: ['Статус', 'Количество'],
-                rows: () => reportState.requests.map((item) => [item.status, item.count])
+                rows: () => getSortedItems('requests').map((item) => [item.status, item.count])
             },
             clients: {
                 fileName: 'clients_report.csv',
                 headers: ['Клиент', 'Количество заказов', 'Общая сумма'],
-                rows: () => reportState.clients.map((item) => [item.clientName, item.ordersCount, item.totalAmount])
+                rows: () => getSortedItems('clients').map((item) => [item.clientName, item.ordersCount, item.totalAmount])
             }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('[data-report-period-form]').addEventListener('submit', (event) => {
+                event.preventDefault();
+                applyReportPeriod();
+            });
+
             document.querySelector('[data-report-form="orders"]').addEventListener('submit', (event) => {
                 event.preventDefault();
-                loadOrders();
+                applyOrdersPeriod();
             });
 
             document.querySelector('[data-report-form="requests"]').addEventListener('submit', (event) => {
@@ -168,82 +294,281 @@
                 button.addEventListener('click', () => downloadReport(button.dataset.download));
             });
 
-            loadOrders();
-            loadRequests();
-            loadClients();
+            document.querySelectorAll('[data-range]').forEach((button) => {
+                button.addEventListener('click', () => applyQuickRange(button.dataset.range));
+            });
+
+            document.querySelectorAll('[data-sort-report]').forEach((button) => {
+                button.addEventListener('click', () => sortReport(button.dataset.sortReport, button.dataset.sortKey));
+            });
+
+            Promise.all([loadOrders(), loadRequests(), loadClients()]).then(updateOverview);
         });
 
         async function loadOrders() {
             const form = document.querySelector('[data-report-form="orders"]');
             const query = new URLSearchParams(new FormData(form));
             await loadReport('orders', `/api/reports/orders?${query}`, renderOrders);
+            updateOverview();
         }
 
         async function loadRequests() {
             const form = document.querySelector('[data-report-form="requests"]');
             const query = new URLSearchParams(new FormData(form));
+            appendPeriodParams(query);
             await loadReport('requests', `/api/reports/requests-by-status?${query}`, renderRequests);
+            updateOverview();
         }
 
         async function loadClients() {
             const form = document.querySelector('[data-report-form="clients"]');
             const query = new URLSearchParams(new FormData(form));
+            appendPeriodParams(query);
             await loadReport('clients', `/api/reports/clients?${query}`, renderClients);
+            updateOverview();
         }
 
         async function loadReport(name, url, render) {
+            if (reportControllers[name]) {
+                reportControllers[name].abort();
+            }
+
+            const controller = new AbortController();
+            reportControllers[name] = controller;
             setReportStatus(name, 'Загрузка...', false);
+            setReportLoading(name, true);
 
             try {
-                const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                const response = await fetch(url, {
+                    headers: { Accept: 'application/json' },
+                    signal: controller.signal
+                });
+
                 if (!response.ok) {
-                    throw new Error('Не удалось загрузить отчёт');
+                    const message = await response.text();
+                    throw new Error(message || 'Не удалось загрузить отчет');
                 }
 
                 const data = await response.json();
-                reportState[name] = data;
-                render(data);
-                setReportStatus(name, data.length ? `Загружено строк: ${data.length}` : 'Нет данных', data.length > 0);
+                reportState[name] = Array.isArray(data) ? data : [];
+                render();
+                setReportStatus(name, reportState[name].length ? `Загружено строк: ${reportState[name].length}` : 'Нет данных', reportState[name].length > 0);
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    return;
+                }
+
                 reportState[name] = [];
-                render([]);
+                render();
                 setReportStatus(name, error.message || 'Ошибка загрузки', false, true);
+            } finally {
+                if (reportControllers[name] === controller) {
+                    reportControllers[name] = null;
+                }
+                setReportLoading(name, false);
             }
         }
 
-        function renderOrders(items) {
+        function renderOrders() {
+            const items = getSortedItems('orders');
             const body = document.querySelector('[data-report-body="orders"]');
+            if (!items.length) {
+                body.innerHTML = emptyRow(7, 'За выбранный период заказов нет.');
+                updateOrderDetails();
+                return;
+            }
+
             body.innerHTML = items.map((item) => `
                 <tr>
                     <td>${escapeHtml(item.orderId)}</td>
-                    <td>${escapeHtml(item.clientName)}</td>
+                    <td class="report-table__strong">${escapeHtml(item.clientName)}</td>
                     <td>${escapeHtml(item.services)}</td>
-                    <td class="text-end">${formatMoney(item.amount)}</td>
-                    <td>${formatDate(item.dueDate)}</td>
-                    <td>${escapeHtml(item.paymentStatus)}</td>
-                    <td>${escapeHtml(item.executionStatus)}</td>
+                    <td class="text-end report-table__strong">${formatMoney(item.amount)}</td>
+                    <td>${renderDueDate(item)}</td>
+                    <td>${renderStatus(item.paymentStatus, getPaymentTone(item.paymentStatusId, item.paymentStatus))}</td>
+                    <td>${renderStatus(item.executionStatus, getExecutionTone(item.executionStatusId, item.executionStatus, item.isOverdue))}</td>
                 </tr>
             `).join('');
+            updateOrderDetails();
         }
 
-        function renderRequests(items) {
+        function renderRequests() {
+            const items = getSortedItems('requests');
             const body = document.querySelector('[data-report-body="requests"]');
+            if (!items.length) {
+                body.innerHTML = emptyRow(2, 'Нет заявок по выбранному фильтру.');
+                renderRequestDistribution([]);
+                return;
+            }
+
             body.innerHTML = items.map((item) => `
                 <tr>
-                    <td>${escapeHtml(item.status)}</td>
-                    <td class="text-end">${escapeHtml(item.count)}</td>
+                    <td>${renderStatus(item.status, getRequestTone(item.statusId, item.status))}</td>
+                    <td class="text-end report-table__strong">${formatNumber(item.count)}</td>
                 </tr>
+            `).join('');
+            renderRequestDistribution(items);
+        }
+
+        function renderClients() {
+            const items = getSortedItems('clients');
+            const body = document.querySelector('[data-report-body="clients"]');
+            if (!items.length) {
+                body.innerHTML = emptyRow(3, 'Клиенты с заказами не найдены.');
+                renderClientBars([]);
+                return;
+            }
+
+            body.innerHTML = items.map((item, index) => `
+                <tr>
+                    <td><span class="client-rank">${index + 1}</span>${escapeHtml(item.clientName)}</td>
+                    <td class="text-end">${formatNumber(item.ordersCount)}</td>
+                    <td class="text-end report-table__strong">${formatMoney(item.totalAmount)}</td>
+                </tr>
+            `).join('');
+            renderClientBars(items);
+        }
+
+        function updateOverview() {
+            const orders = reportState.orders;
+            const revenue = sum(orders, (item) => item.amount);
+            const unpaid = orders.filter((item) => normalizeStatus(item.paymentStatus) !== 'оплачен');
+            const paid = orders.filter((item) => normalizeStatus(item.paymentStatus) === 'оплачен');
+            const completed = orders.filter((item) => normalizeStatus(item.executionStatus) === 'завершен' || normalizeStatus(item.executionStatus) === 'завершён');
+            const average = orders.length ? revenue / orders.length : 0;
+
+            setKpi('revenue', formatMoney(revenue));
+            setKpi('orders', formatNumber(orders.length));
+            setKpi('average', formatMoney(average));
+            setKpi('unpaid', formatNumber(unpaid.length));
+            setKpi('paidShare', orders.length ? `${Math.round(paid.length / orders.length * 100)}%` : '0%');
+            setKpi('completedShare', orders.length ? `${Math.round(completed.length / orders.length * 100)}%` : '0%');
+
+            setKpiHint('revenue', `${formatNumber(orders.length)} заказов`);
+            setKpiHint('orders', orders.length ? `${formatDate(orders[0].dueDate)} - ${formatDate(orders[orders.length - 1].dueDate)}` : 'в таблице заказов');
+            setKpiHint('average', 'на один заказ');
+            setKpiHint('unpaid', `${formatMoney(sum(unpaid, (item) => item.amount))} в работе по оплате`);
+
+            renderSegment('payment', groupBy(orders, 'paymentStatus'), orders.length);
+            renderBars('execution', groupBy(orders, 'executionStatus'), orders.length);
+            updateOrderDetails();
+            renderClientBars(getSortedItems('clients'));
+        }
+
+        function updateOrderDetails() {
+            const orders = reportState.orders;
+            const paid = orders.filter((item) => normalizeStatus(item.paymentStatus) === 'оплачен');
+            const overdue = orders.filter((item) => item.isOverdue);
+
+            setText('[data-orders-total]', formatMoney(sum(orders, (item) => item.amount)));
+            setText('[data-orders-paid]', formatNumber(paid.length));
+            setText('[data-orders-overdue]', formatNumber(overdue.length));
+        }
+
+        function renderSegment(name, groups, total) {
+            const segment = document.querySelector(`[data-report-breakdown="${name}"]`);
+            const legend = document.querySelector(`[data-report-legend="${name}"]`);
+            if (!segment || !legend) {
+                return;
+            }
+
+            if (!total) {
+                segment.innerHTML = '<span class="report-segment__empty"></span>';
+                legend.innerHTML = '<span class="text-muted">Нет данных</span>';
+                return;
+            }
+
+            segment.innerHTML = groups.map((group, index) => {
+                const width = Math.max(4, group.count / total * 100);
+                return `<span class="report-segment__part report-tone-${tonePalette[index % tonePalette.length]}" style="width: ${width}%" title="${escapeHtml(group.label)}: ${group.count}"></span>`;
+            }).join('');
+
+            legend.innerHTML = groups.map((group, index) => `
+                <span class="report-legend__item">
+                    <span class="report-legend__dot report-tone-${tonePalette[index % tonePalette.length]}"></span>
+                    ${escapeHtml(group.label)}: ${formatNumber(group.count)}
+                </span>
             `).join('');
         }
 
-        function renderClients(items) {
-            const body = document.querySelector('[data-report-body="clients"]');
-            body.innerHTML = items.map((item) => `
-                <tr>
-                    <td>${escapeHtml(item.clientName)}</td>
-                    <td class="text-end">${escapeHtml(item.ordersCount)}</td>
-                    <td class="text-end">${formatMoney(item.totalAmount)}</td>
-                </tr>
+        function renderBars(name, groups, total) {
+            const container = document.querySelector(`[data-report-breakdown="${name}"]`);
+            if (!container) {
+                return;
+            }
+
+            if (!total) {
+                container.innerHTML = '<div class="empty-state">Нет данных для диаграммы.</div>';
+                return;
+            }
+
+            container.innerHTML = groups.map((group, index) => {
+                const width = Math.max(4, group.count / total * 100);
+                return `
+                    <div class="report-bar-row">
+                        <div class="report-bar-row__label">
+                            <span>${escapeHtml(group.label)}</span>
+                            <strong>${formatNumber(group.count)}</strong>
+                        </div>
+                        <div class="report-bar-row__track">
+                            <span class="report-bar-row__fill report-tone-${tonePalette[index % tonePalette.length]}" style="width: ${width}%"></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRequestDistribution(items) {
+            const container = document.querySelector('[data-report-request-bars]');
+            const total = sum(items, (item) => item.count);
+            if (!container) {
+                return;
+            }
+
+            if (!total) {
+                container.innerHTML = '<div class="empty-state">Нет данных для распределения.</div>';
+                return;
+            }
+
+            container.innerHTML = items.map((item) => {
+                const percent = Math.round(item.count / total * 100);
+                return `
+                    <div class="report-distribution__item">
+                        <div class="report-distribution__top">
+                            <span>${escapeHtml(item.status)}</span>
+                            <strong>${percent}%</strong>
+                        </div>
+                        <div class="report-bar-row__track">
+                            <span class="report-bar-row__fill status-${item.statusId || 0}" style="width: ${Math.max(4, percent)}%"></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderClientBars(items) {
+            const container = document.querySelector('[data-report-client-bars]');
+            if (!container) {
+                return;
+            }
+
+            const top = items.slice(0, 5);
+            const max = Math.max(...top.map((item) => item.totalAmount || 0), 0);
+            if (!top.length || !max) {
+                container.innerHTML = '<div class="empty-state">Нет данных по клиентам.</div>';
+                return;
+            }
+
+            container.innerHTML = top.map((item, index) => `
+                <div class="client-revenue">
+                    <div class="client-revenue__top">
+                        <span>${escapeHtml(item.clientName)}</span>
+                        <strong>${formatMoney(item.totalAmount)}</strong>
+                    </div>
+                    <div class="report-bar-row__track">
+                        <span class="report-bar-row__fill report-tone-${tonePalette[index % tonePalette.length]}" style="width: ${Math.max(8, item.totalAmount / max * 100)}%"></span>
+                    </div>
+                </div>
             `).join('');
         }
 
@@ -255,6 +580,125 @@
             status.textContent = message;
             status.classList.toggle('text-danger', isError);
             button.disabled = !canDownload;
+        }
+
+        function setReportLoading(name, isLoading) {
+            const section = document.querySelector(`[data-report="${name}"]`);
+            section.classList.toggle('is-loading', isLoading);
+        }
+
+        function sortReport(name, key) {
+            const current = sortState[name];
+            current.direction = current.key === key && current.direction === 'asc' ? 'desc' : 'asc';
+            current.key = key;
+
+            if (name === 'orders') {
+                renderOrders();
+            } else if (name === 'requests') {
+                renderRequests();
+            } else if (name === 'clients') {
+                renderClients();
+            }
+
+            updateSortButtons();
+        }
+
+        function getSortedItems(name) {
+            const { key, direction } = sortState[name];
+            return [...reportState[name]].sort((left, right) => {
+                const leftValue = normalizeSortValue(left[key]);
+                const rightValue = normalizeSortValue(right[key]);
+                const result = leftValue > rightValue ? 1 : leftValue < rightValue ? -1 : 0;
+                return direction === 'asc' ? result : -result;
+            });
+        }
+
+        function updateSortButtons() {
+            document.querySelectorAll('[data-sort-report]').forEach((button) => {
+                const current = sortState[button.dataset.sortReport];
+                const active = current.key === button.dataset.sortKey;
+                button.classList.toggle('is-active', active);
+                button.dataset.direction = active ? current.direction : '';
+            });
+        }
+
+        function applyQuickRange(range) {
+            const today = new Date();
+            const from = new Date(today);
+
+            if (range === 'month') {
+                from.setDate(1);
+            } else {
+                from.setDate(today.getDate() - Number(range) + 1);
+            }
+
+            syncPeriodInputs(toDateInputValue(from), toDateInputValue(today));
+            applyReportPeriod();
+        }
+
+        async function applyReportPeriod() {
+            const from = document.getElementById('periodFrom').value;
+            const to = document.getElementById('periodTo').value;
+            syncPeriodInputs(from, to);
+            updatePeriodUrl(from, to);
+            await Promise.all([loadOrders(), loadRequests(), loadClients()]);
+            updateOverview();
+        }
+
+        async function applyOrdersPeriod() {
+            const from = document.getElementById('ordersFrom').value;
+            const to = document.getElementById('ordersTo').value;
+            syncPeriodInputs(from, to);
+            updatePeriodUrl(from, to);
+            await Promise.all([loadOrders(), loadRequests(), loadClients()]);
+            updateOverview();
+        }
+
+        function syncPeriodInputs(from, to) {
+            document.getElementById('periodFrom').value = from || '';
+            document.getElementById('periodTo').value = to || '';
+            document.getElementById('ordersFrom').value = from || '';
+            document.getElementById('ordersTo').value = to || '';
+            updatePeriodSummary(from, to);
+        }
+
+        function appendPeriodParams(query) {
+            const from = document.getElementById('ordersFrom').value;
+            const to = document.getElementById('ordersTo').value;
+            if (from) {
+                query.set('from', from);
+            }
+
+            if (to) {
+                query.set('to', to);
+            }
+        }
+
+        function updatePeriodSummary(from, to) {
+            const fromText = formatDateInput(from);
+            const toText = formatDateInput(to);
+            setText('[data-report-period-summary]', fromText && toText ? `${fromText} - ${toText}` : 'Период не выбран');
+        }
+
+        function updatePeriodUrl(from, to) {
+            if (!window.history.replaceState) {
+                return;
+            }
+
+            const url = new URL(window.location.href);
+            if (from) {
+                url.searchParams.set('from', from);
+            } else {
+                url.searchParams.delete('from');
+            }
+
+            if (to) {
+                url.searchParams.set('to', to);
+            } else {
+                url.searchParams.delete('to');
+            }
+
+            window.history.replaceState(null, '', url);
         }
 
         function downloadReport(name) {
@@ -273,6 +717,108 @@
             URL.revokeObjectURL(link.href);
         }
 
+        function renderDueDate(item) {
+            const tone = item.isOverdue ? 'danger' : 'neutral';
+            return `<span class="status-pill status-pill--${tone}">${formatDate(item.dueDate)}</span>`;
+        }
+
+        function renderStatus(label, tone) {
+            return `<span class="status-pill status-pill--${tone}"><span class="status-pill__text">${escapeHtml(label)}</span></span>`;
+        }
+
+        function emptyRow(columns, message) {
+            return `<tr><td class="empty-state" colspan="${columns}">${escapeHtml(message)}</td></tr>`;
+        }
+
+        function groupBy(items, key) {
+            const map = new Map();
+            items.forEach((item) => {
+                const label = item[key] || 'Не указано';
+                map.set(label, (map.get(label) || 0) + 1);
+            });
+
+            return [...map.entries()]
+                .map(([label, count]) => ({ label, count }))
+                .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, 'ru'));
+        }
+
+        function sum(items, selector) {
+            return items.reduce((total, item) => total + Number(selector(item) || 0), 0);
+        }
+
+        function setKpi(name, value) {
+            setText(`[data-report-kpi="${name}"]`, value);
+        }
+
+        function setKpiHint(name, value) {
+            setText(`[data-report-kpi-hint="${name}"]`, value);
+        }
+
+        function setText(selector, value) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        function getPaymentTone(statusId, status) {
+            if (statusId === 3 || normalizeStatus(status) === 'оплачен') {
+                return 'success';
+            }
+
+            if (statusId === 2 || normalizeStatus(status).includes('частично')) {
+                return 'warning';
+            }
+
+            return 'danger';
+        }
+
+        function getExecutionTone(statusId, status, isOverdue) {
+            if (isOverdue) {
+                return 'danger';
+            }
+
+            if (statusId === 3 || normalizeStatus(status) === 'завершен' || normalizeStatus(status) === 'завершён') {
+                return 'success';
+            }
+
+            if (statusId === 2 || normalizeStatus(status).includes('выполня')) {
+                return 'info';
+            }
+
+            return 'warning';
+        }
+
+        function getRequestTone(statusId, status) {
+            const normalized = normalizeStatus(status);
+            if (statusId === 3 || normalized.includes('закры')) {
+                return 'success';
+            }
+
+            if (statusId === 2 || normalized.includes('работ')) {
+                return 'info';
+            }
+
+            return 'warning';
+        }
+
+        function normalizeStatus(value) {
+            return String(value || '').trim().toLocaleLowerCase('ru-RU').replace('ё', 'е');
+        }
+
+        function normalizeSortValue(value) {
+            if (typeof value === 'number') {
+                return value;
+            }
+
+            const date = Date.parse(value);
+            if (!Number.isNaN(date) && String(value).includes('-')) {
+                return date;
+            }
+
+            return String(value || '').toLocaleLowerCase('ru-RU');
+        }
+
         function csvCell(value) {
             const text = value == null ? '' : String(value);
             return `"${text.replace(/"/g, '""')}"`;
@@ -282,12 +828,35 @@
             return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(value || 0);
         }
 
+        function formatNumber(value) {
+            return new Intl.NumberFormat('ru-RU').format(value || 0);
+        }
+
         function formatDate(value) {
             if (!value) {
                 return '';
             }
 
             return new Intl.DateTimeFormat('ru-RU').format(new Date(value));
+        }
+
+        function formatDateInput(value) {
+            if (!value) {
+                return '';
+            }
+
+            const parts = value.split('-');
+            if (parts.length !== 3) {
+                return value;
+            }
+
+            return `${parts[2]}.${parts[1]}.${parts[0]}`;
+        }
+
+        function toDateInputValue(date) {
+            const offset = date.getTimezoneOffset();
+            const local = new Date(date.getTime() - offset * 60000);
+            return local.toISOString().slice(0, 10);
         }
 
         function escapeHtml(value) {

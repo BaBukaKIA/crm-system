@@ -1,4 +1,11 @@
 @model EnterpriseAutomation.Models.Order
-@{ ViewData["Title"] = "Редактирование заказа"; }
-<h1>Редактирование заказа</h1>
+@{
+    ViewData["Title"] = "Редактирование заказа";
+}
+
+<div class="page-head">
+    <h1>Редактирование заказа</h1>
+    <p>Обновите услуги, оплату, сроки или статус исполнения.</p>
+</div>
+
 <partial name="_OrderForm" model="Model" />

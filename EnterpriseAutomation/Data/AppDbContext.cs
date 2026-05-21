@@ -1,14 +1,26 @@
+using System.Security.Claims;
+using System.Text.Json;
 using EnterpriseAutomation.Models;
-using Microsoft.EntityFrameworkCore;
 using EnterpriseAutomation.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EnterpriseAutomation.Data
 {
     public class AppDbContext : DbContext
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
+            : this(options, new HttpContextAccessor())
+        {
+        }
+
+        public AppDbContext(DbContextOptions<AppDbContext> options, IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public DbSet<Client> Clients { get; set; }
@@ -18,12 +30,38 @@ namespace EnterpriseAutomation.Data
         public DbSet<RequestStatus> RequestStatuses { get; set; }
         public DbSet<OrderPaymentStatus> OrderPaymentStatuses { get; set; }
         public DbSet<OrderExecutionStatus> OrderExecutionStatuses { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<AutomationRunLog> AutomationRunLogs { get; set; }
+
+        public override int SaveChanges()
+        {
+            AddAuditEntries();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            AddAuditEntries();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            AddAuditEntries();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            // Business rules that must remain true even if data is changed outside MVC forms.
             modelBuilder.Entity<User>().HasIndex(x => x.Login).IsUnique();
             modelBuilder.Entity<Order>().HasIndex(x => x.ServiceRequestId).IsUnique();
+            modelBuilder.Entity<AuditLog>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<AutomationRunLog>().HasIndex(x => x.StartedAt);
 
+            // Reference data is seeded with stable IDs because forms and demo records depend on them.
             modelBuilder.Entity<RequestStatus>().HasData(
                 new RequestStatus { Id = 1, Name = "Новая" },
                 new RequestStatus { Id = 2, Name = "В работе" },
@@ -79,6 +117,83 @@ namespace EnterpriseAutomation.Data
                 new Order { Id = 8, ServiceRequestId = 8, Services = "Доработка портала и тестирование", Amount = 95000, DueDate = new DateTime(2026, 5, 5), PaymentStatusId = 2, ExecutionStatusId = 2 },
                 new Order { Id = 9, ServiceRequestId = 9, Services = "Интеграция с 1С и обмен данными", Amount = 180000, DueDate = new DateTime(2026, 5, 8), PaymentStatusId = 3, ExecutionStatusId = 3 },
                 new Order { Id = 10, ServiceRequestId = 10, Services = "Разработка управленческих отчётов", Amount = 70000, DueDate = new DateTime(2026, 5, 3), PaymentStatusId = 1, ExecutionStatusId = 2 });
+        }
+
+        private void AddAuditEntries()
+        {
+            ChangeTracker.DetectChanges();
+
+            var entries = ChangeTracker.Entries()
+                .Where(entry =>
+                    entry.Entity is not AuditLog &&
+                    entry.Entity is not AutomationRunLog &&
+                    entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
+                .Select(BuildAuditLog)
+                .ToList();
+
+            if (entries.Count > 0)
+            {
+                AuditLogs.AddRange(entries);
+            }
+        }
+
+        private AuditLog BuildAuditLog(EntityEntry entry)
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var actor = context?.User?.Identity?.Name ?? "system";
+            var action = entry.State switch
+            {
+                EntityState.Added => "Created",
+                EntityState.Modified => "Updated",
+                EntityState.Deleted => "Deleted",
+                _ => "Changed"
+            };
+
+            return new AuditLog
+            {
+                CreatedAt = DateTime.UtcNow,
+                Actor = actor,
+                ActorRole = context?.User?.FindFirstValue(ClaimTypes.Role),
+                Action = action,
+                EntityName = entry.Metadata.ClrType.Name,
+                EntityKey = GetPrimaryKey(entry),
+                BeforeJson = entry.State is EntityState.Added ? null : SerializeValues(entry, original: true),
+                AfterJson = entry.State is EntityState.Deleted ? null : SerializeValues(entry, original: false),
+                IpAddress = context?.Connection.RemoteIpAddress?.ToString(),
+                CorrelationId = context?.TraceIdentifier
+            };
+        }
+
+        private static string? GetPrimaryKey(EntityEntry entry)
+        {
+            var key = entry.Properties.FirstOrDefault(property => property.Metadata.IsPrimaryKey());
+            return key == null ? null : Convert.ToString(key.CurrentValue ?? key.OriginalValue);
+        }
+
+        private static string SerializeValues(EntityEntry entry, bool original)
+        {
+            var values = entry.Properties.ToDictionary(
+                property => property.Metadata.Name,
+                property => SanitizeValue(property.Metadata.Name, original ? property.OriginalValue : property.CurrentValue));
+
+            return JsonSerializer.Serialize(values);
+        }
+
+        private static object? SanitizeValue(string propertyName, object? value)
+        {
+            if (value is null)
+            {
+                return null;
+            }
+
+            if (propertyName.Contains("password", StringComparison.OrdinalIgnoreCase) ||
+                propertyName.Contains("token", StringComparison.OrdinalIgnoreCase) ||
+                propertyName.Contains("secret", StringComparison.OrdinalIgnoreCase))
+            {
+                return "[redacted]";
+            }
+
+            return value;
         }
     }
 }

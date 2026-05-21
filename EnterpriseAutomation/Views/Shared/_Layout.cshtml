@@ -1,4 +1,16 @@
-﻿<!DOCTYPE html>
+@{
+    var currentController = (ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty);
+    string NavClass(string controller) => string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)
+        ? "nav-link active"
+        : "nav-link";
+    string GetRoleLabel(string? role) => role switch
+    {
+        UserRoles.Admin => "Администратор системы",
+        UserRoles.Manager => "Менеджер",
+        _ => "Пользователь"
+    };
+}
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
@@ -16,38 +28,69 @@
     <link rel="stylesheet" href="~/EnterpriseAutomation.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light app-navbar border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+    <a class="skip-link" href="#main-content">Перейти к содержимому</a>
+    <header class="app-shell-header">
+        <nav class="navbar navbar-expand-lg app-navbar">
+            <div class="container-fluid app-nav-container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar" aria-controls="appNavbar"
+                        aria-expanded="false" aria-label="Открыть навигацию">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div id="appNavbar" class="navbar-collapse collapse">
+                    <ul class="navbar-nav app-nav-links">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Панель</a>
+                            <a class="@NavClass("Home")" asp-controller="Home" asp-action="Index">Панель</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Clients" asp-action="Index">Клиенты</a>
+                            <a class="@NavClass("Clients")" asp-controller="Clients" asp-action="Index">Клиенты</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Requests" asp-action="Index">Заявки</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Orders" asp-action="Index">Заказы</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Reports" asp-action="Index">Отчёты</a></li>
+                        <li class="nav-item">
+                            <a class="@NavClass("Requests")" asp-controller="Requests" asp-action="Index">Заявки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="@NavClass("Orders")" asp-controller="Orders" asp-action="Index">Заказы</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="@NavClass("Reports")" asp-controller="Reports" asp-action="Index">Отчеты</a>
+                        </li>
                     }
                     </ul>
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary btn-sm theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему">
-                            <span data-theme-toggle-icon>☀</span>
-                            <span data-theme-toggle-text>Light</span>
+                    <div class="app-nav-actions">
+                        <button class="btn theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему">
+                            <span class="theme-toggle__icon" data-theme-toggle-icon>
+                                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M12 2v2"></path>
+                                    <path d="M12 20v2"></path>
+                                    <path d="m4.93 4.93 1.41 1.41"></path>
+                                    <path d="m17.66 17.66 1.41 1.41"></path>
+                                    <path d="M2 12h2"></path>
+                                    <path d="M20 12h2"></path>
+                                    <path d="m6.34 17.66-1.41 1.41"></path>
+                                    <path d="m19.07 4.93-1.41 1.41"></path>
+                                </svg>
+                            </span>
+                            <span data-theme-toggle-text>Светлая</span>
                         </button>
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <span class="text-muted small">@User.Identity.Name (@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)</span>
-                        <form asp-controller="Account" asp-action="Logout" method="post">
-                            <button class="btn btn-outline-secondary btn-sm">Выйти</button>
+                        var userName = User.Identity?.Name ?? "Пользователь";
+                        var roleName = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                        var roleLabel = GetRoleLabel(roleName);
+                        var showRoleLabel = !string.Equals(userName, roleLabel, StringComparison.OrdinalIgnoreCase);
+
+                        <span class="user-chip" title="Участник системы">
+                            <span class="user-chip__name">@userName</span>
+                            @if (showRoleLabel)
+                            {
+                                <span class="user-chip__divider" aria-hidden="true">•</span>
+                                <span class="user-chip__role">@roleLabel</span>
+                            }
+                        </span>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                            <button class="btn btn-danger app-logout-btn">Выйти</button>
                         </form>
                     }
                     else
@@ -59,17 +102,13 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container app-main-container">
+        <main id="main-content" role="main" class="app-main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

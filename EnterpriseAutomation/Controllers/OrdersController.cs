@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using EnterpriseAutomation.Data;
 using EnterpriseAutomation.Models;
 using EnterpriseAutomation.ViewModels;
@@ -16,9 +17,27 @@ public class OrdersController : Controller
 
     public async Task<IActionResult> Index(OrderFilter filter)
     {
-        var query = _db.Orders.Include(x => x.ServiceRequest)!.ThenInclude(x => x!.Client)
-            .Include(x => x.PaymentStatus).Include(x => x.ExecutionStatus).AsQueryable();
-        if (!string.IsNullOrWhiteSpace(filter.Search)) query = query.Where(x => x.Services.Contains(filter.Search) || x.ServiceRequest!.Client!.Name.Contains(filter.Search));
+        var currentManagerId = GetCurrentManagerId();
+        var search = filter.Search?.Trim();
+        var query = _db.Orders
+            .AsNoTracking()
+            .Include(x => x.ServiceRequest)!.ThenInclude(x => x!.Client)
+            .Include(x => x.PaymentStatus)
+            .Include(x => x.ExecutionStatus)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(x =>
+                x.Services.Contains(search!) ||
+                x.ServiceRequest!.Client!.Name.Contains(search!));
+        }
+
+        if (currentManagerId.HasValue)
+        {
+            query = query.Where(x => x.ServiceRequest!.ManagerId == currentManagerId.Value);
+        }
+
         if (filter.PaymentStatusId.HasValue) query = query.Where(x => x.PaymentStatusId == filter.PaymentStatusId);
         if (filter.ExecutionStatusId.HasValue) query = query.Where(x => x.ExecutionStatusId == filter.ExecutionStatusId);
         if (filter.From.HasValue) query = query.Where(x => x.DueDate >= filter.From.Value);
@@ -38,14 +57,7 @@ public class OrdersController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Order order)
     {
-        if (!await _db.ServiceRequests.AnyAsync(x => x.Id == order.ServiceRequestId))
-        {
-            ModelState.AddModelError(nameof(Order.ServiceRequestId), "Выберите заявку.");
-        }
-        else if (await _db.Orders.AnyAsync(x => x.ServiceRequestId == order.ServiceRequestId))
-        {
-            ModelState.AddModelError(nameof(Order.ServiceRequestId), "По выбранной заявке уже создан заказ.");
-        }
+        await ValidateServiceRequestAvailability(order.ServiceRequestId);
 
         if (!ModelState.IsValid)
         {
@@ -59,8 +71,12 @@ public class OrdersController : Controller
 
     public async Task<IActionResult> Edit(int id)
     {
-        var order = await _db.Orders.FindAsync(id);
+        var order = await _db.Orders
+            .Include(x => x.ServiceRequest)
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (order == null) return NotFound();
+        if (!CanManageOrder(order)) return Forbid();
+
         await FillLists(order.Id);
         return View(order);
     }
@@ -69,14 +85,7 @@ public class OrdersController : Controller
     public async Task<IActionResult> Edit(int id, Order order)
     {
         if (id != order.Id) return BadRequest();
-        if (!await _db.ServiceRequests.AnyAsync(x => x.Id == order.ServiceRequestId))
-        {
-            ModelState.AddModelError(nameof(Order.ServiceRequestId), "Выберите заявку.");
-        }
-        else if (await _db.Orders.AnyAsync(x => x.Id != order.Id && x.ServiceRequestId == order.ServiceRequestId))
-        {
-            ModelState.AddModelError(nameof(Order.ServiceRequestId), "По выбранной заявке уже создан заказ.");
-        }
+        await ValidateServiceRequestAvailability(order.ServiceRequestId, order.Id);
 
         if (!ModelState.IsValid)
         {
@@ -84,8 +93,11 @@ public class OrdersController : Controller
             return View(order);
         }
 
-        var existingOrder = await _db.Orders.FindAsync(id);
+        var existingOrder = await _db.Orders
+            .Include(x => x.ServiceRequest)
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (existingOrder == null) return NotFound();
+        if (!CanManageOrder(existingOrder)) return Forbid();
 
         existingOrder.ServiceRequestId = order.ServiceRequestId;
         existingOrder.Services = order.Services;
@@ -101,7 +113,10 @@ public class OrdersController : Controller
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Delete(int id)
     {
-        var order = await _db.Orders.Include(x => x.ServiceRequest)!.ThenInclude(x => x!.Client).FirstOrDefaultAsync(x => x.Id == id);
+        var order = await _db.Orders
+            .AsNoTracking()
+            .Include(x => x.ServiceRequest)!.ThenInclude(x => x!.Client)
+            .FirstOrDefaultAsync(x => x.Id == id);
         return order == null ? NotFound() : View(order);
     }
 
@@ -120,19 +135,80 @@ public class OrdersController : Controller
     private async Task FillLists(int? currentOrderId = null)
     {
         var usedRequestIds = _db.Orders
+            .AsNoTracking()
             .Where(x => !currentOrderId.HasValue || x.Id != currentOrderId.Value)
             .Select(x => x.ServiceRequestId);
 
+        var currentManagerId = GetCurrentManagerId();
+        var requestsQuery = _db.ServiceRequests
+            .AsNoTracking()
+            .Include(x => x.Client)
+            .Where(x => !usedRequestIds.Contains(x.Id));
+
+        if (currentManagerId.HasValue)
+        {
+            requestsQuery = requestsQuery.Where(x => x.ManagerId == currentManagerId.Value);
+        }
+
         ViewBag.Requests = new SelectList(
-            await _db.ServiceRequests
-                .Include(x => x.Client)
-                .Where(x => !usedRequestIds.Contains(x.Id))
+            await requestsQuery
                 .OrderByDescending(x => x.CreatedAt)
                 .Select(x => new { x.Id, Title = $"#{x.Id} - {x.Client!.Name}" })
                 .ToListAsync(),
             "Id",
             "Title");
-        ViewBag.PaymentStatuses = new SelectList(await _db.OrderPaymentStatuses.ToListAsync(), "Id", "Name");
-        ViewBag.ExecutionStatuses = new SelectList(await _db.OrderExecutionStatuses.ToListAsync(), "Id", "Name");
+        ViewBag.PaymentStatuses = new SelectList(
+            await _db.OrderPaymentStatuses.AsNoTracking().ToListAsync(),
+            "Id",
+            "Name");
+        ViewBag.ExecutionStatuses = new SelectList(
+            await _db.OrderExecutionStatuses.AsNoTracking().ToListAsync(),
+            "Id",
+            "Name");
+    }
+
+    private async Task ValidateServiceRequestAvailability(int serviceRequestId, int? currentOrderId = null)
+    {
+        if (!await _db.ServiceRequests.AsNoTracking().AnyAsync(x => x.Id == serviceRequestId))
+        {
+            ModelState.AddModelError(nameof(Order.ServiceRequestId), "Выберите заявку.");
+            return;
+        }
+
+        var currentManagerId = GetCurrentManagerId();
+        if (currentManagerId.HasValue &&
+            !await _db.ServiceRequests.AsNoTracking().AnyAsync(x => x.Id == serviceRequestId && x.ManagerId == currentManagerId.Value))
+        {
+            ModelState.AddModelError(nameof(Order.ServiceRequestId), "Менеджер может создавать заказы только по своим заявкам.");
+            return;
+        }
+
+        // The database has a unique index too; this check keeps the form error friendly.
+        var requestAlreadyHasOrder = await _db.Orders
+            .AsNoTracking()
+            .AnyAsync(x =>
+                x.ServiceRequestId == serviceRequestId &&
+                (!currentOrderId.HasValue || x.Id != currentOrderId.Value));
+
+        if (requestAlreadyHasOrder)
+        {
+            ModelState.AddModelError(nameof(Order.ServiceRequestId), "По выбранной заявке уже создан заказ.");
+        }
+    }
+
+    private int? GetCurrentManagerId()
+    {
+        if (!User.IsInRole(UserRoles.Manager))
+        {
+            return null;
+        }
+
+        return int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : null;
+    }
+
+    private bool CanManageOrder(Order order)
+    {
+        var currentManagerId = GetCurrentManagerId();
+        return !currentManagerId.HasValue || order.ServiceRequest?.ManagerId == currentManagerId.Value;
     }
 }

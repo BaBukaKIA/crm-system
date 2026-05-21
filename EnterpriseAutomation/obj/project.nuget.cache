@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HZ21j9HBXLc=",
+  "dgSpecHash": "Ne94KG+JLck=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Dmitri Plotnikov\\Desktop\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj",
+  "projectFilePath": "C:\\Users\\Dmitri Plotnikov\\Desktop\\Документация\\EnterpriseAutomation\\EnterpriseAutomation\\EnterpriseAutomation.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Dmitri Plotnikov\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\Dmitri Plotnikov\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",

@@ -15,11 +15,17 @@ public class ClientsController : Controller
 
     public async Task<IActionResult> Index(ClientFilter filter)
     {
-        var query = _db.Clients.AsQueryable();
-        if (!string.IsNullOrWhiteSpace(filter.Search))
+        var search = filter.Search?.Trim();
+        var query = _db.Clients.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(x => x.Name.Contains(filter.Search) || (x.Phone ?? "").Contains(filter.Search) || (x.Email ?? "").Contains(filter.Search));
+            query = query.Where(x =>
+                x.Name.Contains(search!) ||
+                (x.Phone != null && x.Phone.Contains(search!)) ||
+                (x.Email != null && x.Email.Contains(search!)));
         }
+
         query = filter.Sort == "email" ? query.OrderBy(x => x.Email) : query.OrderBy(x => x.Name);
         ViewBag.Filter = filter;
         return View(await query.ToListAsync());
@@ -55,7 +61,7 @@ public class ClientsController : Controller
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Delete(int id)
     {
-        var client = await _db.Clients.FindAsync(id);
+        var client = await _db.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         return client == null ? NotFound() : View(client);
     }
 

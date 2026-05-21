@@ -16,7 +16,15 @@ public class AccountController : Controller
     public AccountController(AppDbContext db) => _db = db;
 
     [HttpGet]
-    public IActionResult Login() => View(new LoginViewModel());
+    public IActionResult Login(string? returnUrl = null)
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToLocal(returnUrl);
+        }
+
+        return View(new LoginViewModel { ReturnUrl = returnUrl });
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -24,9 +32,12 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        var hash = PasswordHasher.Hash(model.Password);
-        var user = await _db.Users.FirstOrDefaultAsync(x => x.Login == model.Login && x.PasswordHash == hash);
-        if (user == null)
+        var login = model.Login.Trim();
+        var user = await _db.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Login == login);
+
+        if (user == null || !PasswordHasher.Verify(model.Password, user.PasswordHash))
         {
             ModelState.AddModelError("", "Неверный логин или пароль.");
             return View(model);
@@ -39,9 +50,18 @@ public class AccountController : Controller
             new(ClaimTypes.Role, user.Role)
         };
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = model.RememberMe,
+            ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(14) : null
+        };
 
-        return RedirectToAction("Index", "Home");
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(identity),
+            authProperties);
+
+        return RedirectToLocal(model.ReturnUrl);
     }
 
     [HttpPost]
@@ -53,4 +73,14 @@ public class AccountController : Controller
     }
 
     public IActionResult AccessDenied() => View();
+
+    private IActionResult RedirectToLocal(string? returnUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        return RedirectToAction("Index", "Home");
+    }
 }

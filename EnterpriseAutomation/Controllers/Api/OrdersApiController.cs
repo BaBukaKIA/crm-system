@@ -15,8 +15,11 @@ public class OrdersApiController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> Get(int? paymentStatusId, int? executionStatusId) =>
-        Ok(await _db.Orders.Include(x => x.ServiceRequest)!.ThenInclude(x => x!.Client)
-            .Include(x => x.PaymentStatus).Include(x => x.ExecutionStatus)
+        Ok(await _db.Orders
+            .AsNoTracking()
+            .Include(x => x.ServiceRequest)!.ThenInclude(x => x!.Client)
+            .Include(x => x.PaymentStatus)
+            .Include(x => x.ExecutionStatus)
             .Where(x => !paymentStatusId.HasValue || x.PaymentStatusId == paymentStatusId)
             .Where(x => !executionStatusId.HasValue || x.ExecutionStatusId == executionStatusId)
             .ToListAsync());

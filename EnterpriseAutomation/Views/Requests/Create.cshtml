@@ -1,4 +1,11 @@
 @model EnterpriseAutomation.Models.ServiceRequest
-@{ ViewData["Title"] = "Новая заявка"; }
-<h1>Новая заявка</h1>
+@{
+    ViewData["Title"] = "Новая заявка";
+}
+
+<div class="page-head">
+    <h1>Новая заявка</h1>
+    <p>Зафиксируйте обращение клиента и назначьте ответственного.</p>
+</div>
+
 <partial name="_RequestForm" model="Model" />

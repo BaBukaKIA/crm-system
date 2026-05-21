@@ -1,4 +1,11 @@
 @model EnterpriseAutomation.Models.Client
-@{ ViewData["Title"] = "Редактирование клиента"; }
-<h1>Редактирование клиента</h1>
+@{
+    ViewData["Title"] = "Редактирование клиента";
+}
+
+<div class="page-head">
+    <h1>Редактирование клиента</h1>
+    <p>Обновите контактные данные и примечания.</p>
+</div>
+
 <partial name="_ClientForm" model="Model" />
