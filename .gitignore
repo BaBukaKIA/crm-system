@@ -1,10 +1,11 @@
 bin/
 obj/
-build-check/
-
-*.user
-*.suo
-*.rsuser
-
 .vs/
 .vscode/
+.idea/
+.dotnet/
+build-check/
+*.user
+*.suo
+*.lscache
+.env
